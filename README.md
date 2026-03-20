@@ -7,43 +7,40 @@
 
 # Pterodactyl Panel
 
-Pterodactyl® is a free, open-source game server management panel built with PHP, React, and Go. Designed with security
-in mind, Pterodactyl runs all game servers in isolated Docker containers while exposing a beautiful and intuitive
-UI to end users.
+Pterodactyl は、PHP、React、Go で構築された無料のオープンソースゲームサーバー管理パネルです。セキュリティを重視して設計されており、すべてのゲームサーバーを分離された Docker コンテナ上で実行しながら、エンドユーザーには直感的で見やすい UI を提供します。
 
-Stop settling for less. Make game servers a first class citizen on your platform.
+ゲームサーバーを、あなたのプラットフォームの正式な主役にしてください。
 
 ![Image](https://cdn.pterodactyl.io/site-assets/pterodactyl_v1_demo.gif)
 
-## Documentation
+## ドキュメント
 
-* [Panel Documentation](https://pterodactyl.io/panel/1.0/getting_started.html)
-* [Wings Documentation](https://pterodactyl.io/wings/1.0/installing.html)
-* [Community Guides](https://pterodactyl.io/community/about.html)
-* Or, get additional help [via Discord](https://discord.gg/pterodactyl)
+* [Panel ドキュメント](https://pterodactyl.io/panel/1.0/getting_started.html)
+* [Wings ドキュメント](https://pterodactyl.io/wings/1.0/installing.html)
+* [コミュニティガイド](https://pterodactyl.io/community/about.html)
+* 追加サポートは [Discord](https://discord.gg/pterodactyl) から利用できます
 
-## Sponsors
+## スポンサー
 
-I would like to extend my sincere thanks to the following sponsors for helping fund Pterodactyl's development.
-[Interested in becoming a sponsor?](https://github.com/sponsors/pterodactyl)
+Pterodactyl の開発を支援してくださっている以下のスポンサー各社に感謝します。
+[スポンサーに興味がありますか？](https://github.com/sponsors/pterodactyl)
 
-| Company                                                                           | About                                                                                                                                                                                                                                           |
+| 企業名                                                                            | 概要                                                                                                                                                                                                                                            |
 |-----------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| [**Aussie Server Hosts**](https://aussieserverhosts.com/)                         | No frills Australian Owned and operated High Performance Server hosting for some of the most demanding games serving Australia and New Zealand.                                                                                                 |
-| [**BisectHosting**](https://www.bisecthosting.com/)                               | BisectHosting provides Minecraft, Valheim and other server hosting services with the highest reliability and lightning fast support since 2012.                                                                                                 |
-| [**MineStrator**](https://minestrator.com/)                                       | Looking for the most highend French hosting company for your minecraft server? More than 24,000 members on our discord trust us. Give us a try!                                                                                                 |
-| [**HostEZ**](https://hostez.io)                                                   | US & EU Rust & Minecraft Hosting. DDoS Protected bare metal, VPS and colocation with low latency, high uptime and maximum availability. EZ!                                                                                                     |
-| [**Blueprint**](https://blueprint.zip/?utm_source=pterodactyl&utm_medium=sponsor) | Create and install Pterodactyl addons and themes with the growing Blueprint framework - the package-manager for Pterodactyl. Use multiple modifications at once without worrying about conflicts and make use of the large extension ecosystem. |
-| [**indifferent broccoli**](https://indifferentbroccoli.com/)                      | indifferent broccoli is a game server hosting and rental company. With us, you get top-notch computer power for your gaming sessions. We destroy lag, latency, and complexity--letting you focus on the fun stuff.                              |
+| [**Aussie Server Hosts**](https://aussieserverhosts.com/)                         | オーストラリアとニュージーランド向けに、高負荷ゲームにも対応する高性能なサーバーホスティングを提供しています。                                                                                                                               |
+| [**BisectHosting**](https://www.bisecthosting.com/)                               | 2012 年以来、Minecraft、Valheim などのサーバーホスティングを高い信頼性と高速サポートで提供しています。                                                                                                                                        |
+| [**MineStrator**](https://minestrator.com/)                                       | Minecraft サーバー向けのフランス系ハイエンドホスティング会社です。Discord では 24,000 人以上のメンバーに利用されています。                                                                                                                  |
+| [**HostEZ**](https://hostez.io)                                                   | 米国・欧州向けの Rust / Minecraft ホスティング。DDoS 対策済みのベアメタル、VPS、コロケーションを低遅延・高稼働率で提供します。                                                                                                               |
+| [**Blueprint**](https://blueprint.zip/?utm_source=pterodactyl&utm_medium=sponsor) | 成長中の Blueprint フレームワークを使って、Pterodactyl のアドオンやテーマを作成・導入できます。競合を気にせず複数の拡張を併用でき、大きな拡張エコシステムを活用できます。                                                                |
+| [**indifferent broccoli**](https://indifferentbroccoli.com/)                      | ゲームサーバーのホスティングとレンタルを行う企業です。高性能な計算資源を提供し、ラグや遅延、複雑さを減らしてゲーム体験に集中できる環境を提供します。                                                                                        |
 
-### Supported Games
+### 対応ゲーム
 
-Pterodactyl supports a wide variety of games by utilizing Docker containers to isolate each instance. This gives
-you the power to run game servers without bloating machines with a host of additional dependencies.
+Pterodactyl は Docker コンテナによって各インスタンスを分離し、幅広いゲームに対応しています。これにより、ホストマシンへ大量の追加依存関係を積まずにゲームサーバーを運用できます。
 
-Some of our core supported games include:
+代表的な対応ゲーム:
 
-* Minecraft — including Paper, Sponge, Bungeecord, Waterfall, and more
+* Minecraft（Paper、Sponge、Bungeecord、Waterfall などを含む）
 * Rust
 * Terraria
 * Teamspeak
@@ -53,8 +50,7 @@ Some of our core supported games include:
 * Garry's Mod
 * ARK: Survival Evolved
 
-In addition to our standard nest of supported games, our community is constantly pushing the limits of this software
-and there are plenty more games available provided by the community. Some of these games include:
+標準の Nest 以外にも、コミュニティにより多数のゲームが提供されています。例:
 
 * Factorio
 * San Andreas: MP
@@ -62,11 +58,11 @@ and there are plenty more games available provided by the community. Some of the
 * Squad
 * Xonotic
 * Starmade
-* Discord ATLBot, and most other Node.js/Python discord bots
-* [and many more...](https://pterodactyleggs.com)
+* Discord ATLBot など、ほとんどの Node.js / Python 製 Discord Bot
+* [さらに多数...](https://pterodactyleggs.com)
 
-## License
+## ライセンス
 
-Pterodactyl® Copyright © 2015 - 2022 Dane Everitt and contributors.
+Pterodactyl Copyright © 2015 - 2022 Dane Everitt and contributors.
 
-Code released under the [MIT License](./LICENSE.md).
+コードは [MIT License](./LICENSE.md) の下で公開されています。

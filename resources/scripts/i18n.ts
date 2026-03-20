@@ -3,16 +3,27 @@ import { initReactI18next } from 'react-i18next';
 import I18NextHttpBackend, { HttpBackendOptions } from 'i18next-http-backend';
 import I18NextMultiloadBackendAdapter from 'i18next-multiload-backend-adapter';
 
+type BootstrapWindow = Window & {
+    PterodactylUser?: {
+        language?: string;
+    };
+    SiteConfiguration?: {
+        locale?: string;
+    };
+};
+
 // If we're using HMR use a unique hash per page reload so that we're always
 // doing cache busting. Otherwise just use the builder provided hash value in
 // the URL to allow cache busting to occur whenever the front-end is rebuilt.
 const hash = module.hot ? Date.now().toString(16) : process.env.WEBPACK_BUILD_HASH;
+const bootstrapWindow = typeof window === 'undefined' ? undefined : (window as BootstrapWindow);
+const initialLocale = bootstrapWindow?.PterodactylUser?.language || bootstrapWindow?.SiteConfiguration?.locale || 'en';
 
 i18n.use(I18NextMultiloadBackendAdapter)
     .use(initReactI18next)
     .init({
         debug: process.env.DEBUG === 'true',
-        lng: 'en',
+        lng: initialLocale,
         fallbackLng: 'en',
         keySeparator: '.',
         backend: {
