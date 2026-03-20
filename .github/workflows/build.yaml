@@ -34,4 +34,5 @@ jobs:
         run: yarn install --frozen-lockfile
       - run: yarn tsc
       - run: yarn lint
+        if: github.event_name == 'pull_request'
       - run: yarn build:production
