@@ -3,6 +3,16 @@ This file is a running track of new features and fixes to each version of the pa
 
 This project follows [Semantic Versioning](http://semver.org) guidelines.
 
+## v1.0.0
+### Added
+* Initial public release for the `sora-skylab/Panel` fork based on upstream `v1.12.1`.
+* Japanese localization support for the Panel UI, including authentication screens, dashboard views, and server management pages.
+* Japanese translation resources for the React frontend and locale-aware date/time formatting helpers.
+
+### Changed
+* README was localized for this fork.
+* GitHub Actions build workflow now runs on pushes to `main`.
+
 ## v1.12.1
 ### Fixed
 * [CVE-2026-26016](https://github.com/pterodactyl/panel/security/advisories/GHSA-g7vw-f8p5-c728)
