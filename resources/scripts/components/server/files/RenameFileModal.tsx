@@ -9,6 +9,7 @@ import tw from 'twin.macro';
 import Button from '@/components/elements/Button';
 import useFileManagerSwr from '@/plugins/useFileManagerSwr';
 import useFlash from '@/plugins/useFlash';
+import { t } from '@/lib/locale';
 
 interface FormikValues {
     name: string;
@@ -66,22 +67,22 @@ const RenameFileModal = ({ files, useMoveTerminology, ...props }: OwnProps) => {
                                     type={'string'}
                                     id={'file_name'}
                                     name={'name'}
-                                    label={'File Name'}
+                                    label={t('ui.server.files.file_name')}
                                     description={
-                                        useMoveTerminology
-                                            ? 'Enter the new name and directory of this file or folder, relative to the current directory.'
-                                            : undefined
+                                        useMoveTerminology ? t('ui.server.files.move_description') : undefined
                                     }
                                     autoFocus
                                 />
                             </div>
                             <div css={tw`w-full sm:w-auto mt-4 sm:mt-0`}>
-                                <Button css={tw`w-full`}>{useMoveTerminology ? 'Move' : 'Rename'}</Button>
+                                <Button css={tw`w-full`}>
+                                    {useMoveTerminology ? t('ui.common.move') : t('ui.common.rename')}
+                                </Button>
                             </div>
                         </div>
                         {useMoveTerminology && (
                             <p css={tw`text-xs mt-2 text-neutral-400`}>
-                                <strong css={tw`text-neutral-200`}>New location:</strong>
+                                <strong css={tw`text-neutral-200`}>{t('ui.server.files.new_location')}</strong>
                                 &nbsp;/home/container/{join(directory, values.name).replace(/^(\.\.\/|\/)+/, '')}
                             </p>
                         )}

@@ -20,6 +20,7 @@ import ErrorBoundary from '@/components/elements/ErrorBoundary';
 import { encodePathSegments, hashToPath } from '@/helpers';
 import { dirname } from 'pathe';
 import CodemirrorEditor from '@/components/elements/CodemirrorEditor';
+import { t } from '@/lib/locale';
 
 export default () => {
     const [error, setError] = useState('');
@@ -94,11 +95,12 @@ export default () => {
             {hash.replace(/^#/, '').endsWith('.pteroignore') && (
                 <div css={tw`mb-4 p-4 border-l-4 bg-neutral-900 rounded border-cyan-400`}>
                     <p css={tw`text-neutral-300 text-sm`}>
-                        You&apos;re editing a <code css={tw`font-mono bg-black rounded py-px px-1`}>.pteroignore</code>{' '}
-                        file. Any files or directories listed in here will be excluded from backups. Wildcards are
-                        supported by using an asterisk (<code css={tw`font-mono bg-black rounded py-px px-1`}>*</code>).
-                        You can negate a prior rule by prepending an exclamation point (
-                        <code css={tw`font-mono bg-black rounded py-px px-1`}>!</code>).
+                        {t('ui.server.files.pteroignore_intro')}
+                        <code css={tw`font-mono bg-black rounded py-px px-1`}>.pteroignore</code>{' '}
+                        {t('ui.server.files.pteroignore_middle')} (
+                        <code css={tw`font-mono bg-black rounded py-px px-1`}>*</code>).{' '}
+                        {t('ui.server.files.pteroignore_end')} (
+                        <code css={tw`font-mono bg-black rounded py-px px-1`}>!</code>)
                     </p>
                 </div>
             )}
@@ -142,13 +144,13 @@ export default () => {
                 {action === 'edit' ? (
                     <Can action={'file.update'}>
                         <Button css={tw`flex-1 sm:flex-none`} onClick={() => save()}>
-                            Save Content
+                            {t('ui.server.files.save_content')}
                         </Button>
                     </Can>
                 ) : (
                     <Can action={'file.create'}>
                         <Button css={tw`flex-1 sm:flex-none`} onClick={() => setModalVisible(true)}>
-                            Create File
+                            {t('ui.server.files.create_file')}
                         </Button>
                     </Can>
                 )}

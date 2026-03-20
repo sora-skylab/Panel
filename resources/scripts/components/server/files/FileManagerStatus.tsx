@@ -7,6 +7,7 @@ import { Button } from '@/components/elements/button/index';
 import Tooltip from '@/components/elements/tooltip/Tooltip';
 import Code from '@/components/elements/Code';
 import { useSignal } from '@preact/signals-react';
+import { t } from '@/lib/locale';
 
 const svgProps = {
     cx: 16,
@@ -58,17 +59,17 @@ const FileUploadList = () => {
             ))}
             <Dialog.Footer>
                 <Button.Danger variant={Button.Variants.Secondary} onClick={() => clearFileUploads()}>
-                    Cancel Uploads
+                    {t('ui.server.files.cancel_uploads')}
                 </Button.Danger>
-                <Button.Text onClick={close}>Close</Button.Text>
+                <Button.Text onClick={close}>{t('ui.common.close')}</Button.Text>
             </Dialog.Footer>
         </div>
     );
 };
 
 const FileUploadListDialog = asDialog({
-    title: 'File Uploads',
-    description: 'The following files are being uploaded to your server.',
+    title: t('ui.server.files.file_uploads'),
+    description: t('ui.server.files.file_uploads_description'),
 })(FileUploadList);
 
 export default () => {
@@ -89,7 +90,7 @@ export default () => {
     return (
         <>
             {count > 0 && (
-                <Tooltip content={`${count} files are uploading, click to view`}>
+                <Tooltip content={t('ui.server.files.upload_tooltip', { count })}>
                     <button
                         className={'flex items-center justify-center w-10 h-10'}
                         onClick={() => (open.value = true)}

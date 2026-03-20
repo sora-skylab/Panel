@@ -4,6 +4,7 @@ import TitledGreyBox from '@/components/elements/TitledGreyBox';
 import tw from 'twin.macro';
 import Input from '@/components/elements/Input';
 import isEqual from 'react-fast-compare';
+import { t } from '@/lib/locale';
 
 interface Props {
     isEditable: boolean;
@@ -11,6 +12,18 @@ interface Props {
     permissions: string[];
     className?: string;
 }
+
+const groupTitleKeys: Record<string, string> = {
+    allocation: 'ui.server.users.permission_groups.allocation',
+    control: 'ui.server.users.permission_groups.control',
+    database: 'ui.server.users.permission_groups.database',
+    file: 'ui.server.users.permission_groups.file',
+    schedule: 'ui.server.users.permission_groups.schedule',
+    settings: 'ui.server.users.permission_groups.settings',
+    startup: 'ui.server.users.permission_groups.startup',
+    user: 'ui.server.users.permission_groups.user',
+    websocket: 'ui.server.users.permission_groups.websocket',
+};
 
 const PermissionTitleBox: React.FC<Props> = memo(({ isEditable, title, permissions, className, children }) => {
     const [{ value }, , { setValue }] = useField<string[]>('permissions');
@@ -30,7 +43,9 @@ const PermissionTitleBox: React.FC<Props> = memo(({ isEditable, title, permissio
         <TitledGreyBox
             title={
                 <div css={tw`flex items-center`}>
-                    <p css={tw`text-sm uppercase flex-1`}>{title}</p>
+                    <p css={tw`text-sm uppercase flex-1`}>
+                        {groupTitleKeys[title] ? t(groupTitleKeys[title]) : title}
+                    </p>
                     {isEditable && (
                         <Input
                             type={'checkbox'}

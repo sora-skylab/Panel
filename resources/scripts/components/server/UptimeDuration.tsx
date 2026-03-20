@@ -1,4 +1,5 @@
 import React from 'react';
+import { t } from '@/lib/locale';
 
 export default ({ uptime }: { uptime: number }) => {
     const days = Math.floor(uptime / (24 * 60 * 60));
@@ -8,16 +9,8 @@ export default ({ uptime }: { uptime: number }) => {
     const seconds = remainder % 60;
 
     if (days > 0) {
-        return (
-            <>
-                {days}d {hours}h {minutes}m
-            </>
-        );
+        return <>{t('ui.server.details.uptime_days_short', { days, hours, minutes })}</>;
     }
 
-    return (
-        <>
-            {hours}h {minutes}m {seconds}s
-        </>
-    );
+    return <>{t('ui.server.details.uptime_short', { hours, minutes, seconds })}</>;
 };

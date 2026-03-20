@@ -46,23 +46,23 @@ export default {
     account: [
         {
             path: '/',
-            name: 'Account',
+            name: 'ui.nav.account',
             component: AccountOverviewContainer,
             exact: true,
         },
         {
             path: '/api',
-            name: 'API Credentials',
+            name: 'ui.nav.api_credentials',
             component: AccountApiContainer,
         },
         {
             path: '/ssh',
-            name: 'SSH Keys',
+            name: 'ui.nav.ssh_keys',
             component: AccountSSHContainer,
         },
         {
             path: '/activity',
-            name: 'Activity',
+            name: 'ui.nav.activity',
             component: ActivityLogContainer,
         },
     ],
@@ -70,14 +70,14 @@ export default {
         {
             path: '/',
             permission: null,
-            name: 'Console',
+            name: 'ui.nav.console',
             component: ServerConsole,
             exact: true,
         },
         {
             path: '/files',
             permission: 'file.*',
-            name: 'Files',
+            name: 'ui.nav.files',
             component: FileManagerContainer,
         },
         {
@@ -89,13 +89,13 @@ export default {
         {
             path: '/databases',
             permission: 'database.*',
-            name: 'Databases',
+            name: 'ui.nav.databases',
             component: DatabasesContainer,
         },
         {
             path: '/schedules',
             permission: 'schedule.*',
-            name: 'Schedules',
+            name: 'ui.nav.schedules',
             component: ScheduleContainer,
         },
         {
@@ -107,37 +107,37 @@ export default {
         {
             path: '/users',
             permission: 'user.*',
-            name: 'Users',
+            name: 'ui.nav.users',
             component: UsersContainer,
         },
         {
             path: '/backups',
             permission: 'backup.*',
-            name: 'Backups',
+            name: 'ui.nav.backups',
             component: BackupContainer,
         },
         {
             path: '/network',
             permission: 'allocation.*',
-            name: 'Network',
+            name: 'ui.nav.network',
             component: NetworkContainer,
         },
         {
             path: '/startup',
             permission: 'startup.*',
-            name: 'Startup',
+            name: 'ui.nav.startup',
             component: StartupContainer,
         },
         {
             path: '/settings',
             permission: ['settings.*', 'file.sftp'],
-            name: 'Settings',
+            name: 'ui.nav.settings',
             component: SettingsContainer,
         },
         {
             path: '/activity',
             permission: 'activity.*',
-            name: 'Activity',
+            name: 'ui.nav.activity',
             component: ServerActivityLogContainer,
         },
     ],

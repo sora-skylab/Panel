@@ -14,6 +14,7 @@ import ModalContext from '@/context/ModalContext';
 import asModal from '@/hoc/asModal';
 import Switch from '@/components/elements/Switch';
 import ScheduleCheatsheetCards from '@/components/server/schedules/ScheduleCheatsheetCards';
+import { t } from '@/lib/locale';
 
 interface Props {
     schedule?: Schedule;
@@ -90,29 +91,28 @@ const EditScheduleModal = ({ schedule }: Props) => {
         >
             {({ isSubmitting }) => (
                 <Form>
-                    <h3 css={tw`text-2xl mb-6`}>{schedule ? 'Edit schedule' : 'Create new schedule'}</h3>
+                    <h3 css={tw`text-2xl mb-6`}>
+                        {schedule ? t('ui.server.schedules.edit_schedule') : t('ui.server.schedules.create_new_schedule')}
+                    </h3>
                     <FlashMessageRender byKey={'schedule:edit'} css={tw`mb-6`} />
                     <Field
                         name={'name'}
-                        label={'Schedule name'}
-                        description={'A human readable identifier for this schedule.'}
+                        label={t('ui.server.schedules.schedule_name')}
+                        description={t('ui.server.schedules.schedule_name_description')}
                     />
                     <div css={tw`grid grid-cols-2 sm:grid-cols-5 gap-4 mt-6`}>
-                        <Field name={'minute'} label={'Minute'} />
-                        <Field name={'hour'} label={'Hour'} />
-                        <Field name={'dayOfMonth'} label={'Day of month'} />
-                        <Field name={'month'} label={'Month'} />
-                        <Field name={'dayOfWeek'} label={'Day of week'} />
+                        <Field name={'minute'} label={t('ui.server.schedules.minute')} />
+                        <Field name={'hour'} label={t('ui.server.schedules.hour')} />
+                        <Field name={'dayOfMonth'} label={t('ui.server.schedules.day_of_month')} />
+                        <Field name={'month'} label={t('ui.server.schedules.month')} />
+                        <Field name={'dayOfWeek'} label={t('ui.server.schedules.day_of_week')} />
                     </div>
-                    <p css={tw`text-neutral-400 text-xs mt-2`}>
-                        The schedule system supports the use of Cronjob syntax when defining when tasks should begin
-                        running. Use the fields above to specify when these tasks should begin running.
-                    </p>
+                    <p css={tw`text-neutral-400 text-xs mt-2`}>{t('ui.server.schedules.cron_help')}</p>
                     <div css={tw`mt-6 bg-neutral-700 border border-neutral-800 shadow-inner p-4 rounded`}>
                         <Switch
                             name={'show_cheatsheet'}
-                            description={'Show the cron cheatsheet for some examples.'}
-                            label={'Show Cheatsheet'}
+                            description={t('ui.server.schedules.show_cheatsheet_description')}
+                            label={t('ui.server.schedules.show_cheatsheet')}
                             defaultChecked={showCheatsheet}
                             onChange={() => setShowCheetsheet((s) => !s)}
                         />
@@ -125,20 +125,20 @@ const EditScheduleModal = ({ schedule }: Props) => {
                     <div css={tw`mt-6 bg-neutral-700 border border-neutral-800 shadow-inner p-4 rounded`}>
                         <FormikSwitch
                             name={'onlyWhenOnline'}
-                            description={'Only execute this schedule when the server is in a running state.'}
-                            label={'Only When Server Is Online'}
+                            description={t('ui.server.schedules.only_when_online_description')}
+                            label={t('ui.server.schedules.only_when_online')}
                         />
                     </div>
                     <div css={tw`mt-6 bg-neutral-700 border border-neutral-800 shadow-inner p-4 rounded`}>
                         <FormikSwitch
                             name={'enabled'}
-                            description={'This schedule will be executed automatically if enabled.'}
-                            label={'Schedule Enabled'}
+                            description={t('ui.server.schedules.schedule_enabled_description')}
+                            label={t('ui.server.schedules.schedule_enabled')}
                         />
                     </div>
                     <div css={tw`mt-6 text-right`}>
                         <Button className={'w-full sm:w-auto'} type={'submit'} disabled={isSubmitting}>
-                            {schedule ? 'Save changes' : 'Create schedule'}
+                            {schedule ? t('ui.server.schedules.save_changes') : t('ui.server.schedules.create_schedule')}
                         </Button>
                     </div>
                 </Form>

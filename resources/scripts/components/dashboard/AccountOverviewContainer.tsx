@@ -9,6 +9,7 @@ import { breakpoint } from '@/theme';
 import styled from 'styled-components/macro';
 import MessageBox from '@/components/MessageBox';
 import { useLocation } from 'react-router-dom';
+import { t } from '@/lib/locale';
 
 const Container = styled.div`
     ${tw`flex flex-wrap`};
@@ -30,21 +31,25 @@ export default () => {
     const { state } = useLocation<undefined | { twoFactorRedirect?: boolean }>();
 
     return (
-        <PageContentBlock title={'Account Overview'}>
+        <PageContentBlock title={t('ui.dashboard.account_overview')}>
             {state?.twoFactorRedirect && (
-                <MessageBox title={'2-Factor Required'} type={'error'}>
-                    Your account must have two-factor authentication enabled in order to continue.
+                <MessageBox title={t('ui.dashboard.two_factor_required')} type={'error'}>
+                    {t('ui.dashboard.two_factor_required_message')}
                 </MessageBox>
             )}
 
             <Container css={[tw`lg:grid lg:grid-cols-3 mb-10`, state?.twoFactorRedirect ? tw`mt-4` : tw`mt-10`]}>
-                <ContentBox title={'Update Password'} showFlashes={'account:password'}>
+                <ContentBox title={t('ui.dashboard.update_password')} showFlashes={'account:password'}>
                     <UpdatePasswordForm />
                 </ContentBox>
-                <ContentBox css={tw`mt-8 sm:mt-0 sm:ml-8`} title={'Update Email Address'} showFlashes={'account:email'}>
+                <ContentBox
+                    css={tw`mt-8 sm:mt-0 sm:ml-8`}
+                    title={t('ui.dashboard.update_email_address')}
+                    showFlashes={'account:email'}
+                >
                     <UpdateEmailAddressForm />
                 </ContentBox>
-                <ContentBox css={tw`md:ml-8 mt-8 md:mt-0`} title={'Two-Step Verification'}>
+                <ContentBox css={tw`md:ml-8 mt-8 md:mt-0`} title={t('ui.dashboard.two_step_verification')}>
                     <ConfigureTwoFactorForm />
                 </ContentBox>
             </Container>

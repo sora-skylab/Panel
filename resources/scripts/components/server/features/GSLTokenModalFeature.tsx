@@ -9,6 +9,7 @@ import { SocketEvent, SocketRequest } from '@/components/server/events';
 import Field from '@/components/elements/Field';
 import updateStartupVariable from '@/api/server/updateStartupVariable';
 import { Form, Formik } from 'formik';
+import { t } from '@/lib/locale';
 
 interface Values {
     gslToken: string;
@@ -75,25 +76,20 @@ const GSLTokenModalFeature = () => {
             >
                 <FlashMessageRender key={'feature:gslToken'} css={tw`mb-4`} />
                 <Form>
-                    <h2 css={tw`text-2xl mb-4 text-neutral-100`}>Invalid GSL token!</h2>
-                    <p css={tw`mt-4`}>
-                        It seems like your Gameserver Login Token (GSL token) is invalid or has expired.
-                    </p>
-                    <p css={tw`mt-4`}>
-                        You can either generate a new one and enter it below or leave the field blank to remove it
-                        completely.
-                    </p>
+                    <h2 css={tw`text-2xl mb-4 text-neutral-100`}>{t('ui.server.features.gsl_invalid_title')}</h2>
+                    <p css={tw`mt-4`}>{t('ui.server.features.gsl_invalid_description')}</p>
+                    <p css={tw`mt-4`}>{t('ui.server.features.gsl_invalid_description_2')}</p>
                     <div css={tw`sm:flex items-center mt-4`}>
                         <Field
                             name={'gslToken'}
-                            label={'GSL Token'}
-                            description={'Visit https://steamcommunity.com/dev/managegameservers to generate a token.'}
+                            label={t('ui.server.features.gsl_token')}
+                            description={t('ui.server.features.gsl_token_description')}
                             autoFocus
                         />
                     </div>
                     <div css={tw`mt-8 sm:flex items-center justify-end`}>
                         <Button type={'submit'} css={tw`mt-4 sm:mt-0 sm:ml-4 w-full sm:w-auto`}>
-                            Update GSL Token
+                            {t('ui.server.features.update_gsl_token')}
                         </Button>
                     </div>
                 </Form>

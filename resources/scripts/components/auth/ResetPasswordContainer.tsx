@@ -12,6 +12,7 @@ import Field from '@/components/elements/Field';
 import Input from '@/components/elements/Input';
 import tw from 'twin.macro';
 import Button from '@/components/elements/Button';
+import { t } from '@/lib/locale';
 
 interface Values {
     password: string;
@@ -39,7 +40,7 @@ export default ({ match, location }: RouteComponentProps<{ token: string }>) => 
                 console.error(error);
 
                 setSubmitting(false);
-                addFlash({ type: 'error', title: 'Error', message: httpErrorToHuman(error) });
+                addFlash({ type: 'error', title: t('ui.common.error'), message: httpErrorToHuman(error) });
             });
     };
 
@@ -52,35 +53,40 @@ export default ({ match, location }: RouteComponentProps<{ token: string }>) => 
             }}
             validationSchema={object().shape({
                 password: string()
-                    .required('A new password is required.')
-                    .min(8, 'Your new password should be at least 8 characters in length.'),
+                    .required(t('ui.auth.validation.new_password_required'))
+                    .min(8, t('ui.auth.validation.new_password_length')),
                 passwordConfirmation: string()
-                    .required('Your new password does not match.')
+                    .required(t('ui.auth.validation.new_password_mismatch'))
                     // @ts-expect-error this is valid
-                    .oneOf([ref('password'), null], 'Your new password does not match.'),
+                    .oneOf([ref('password'), null], t('ui.auth.validation.new_password_mismatch')),
             })}
         >
             {({ isSubmitting }) => (
-                <LoginFormContainer title={'Reset Password'} css={tw`w-full flex`}>
+                <LoginFormContainer title={t('ui.auth.reset_password')} css={tw`w-full flex`}>
                     <div>
-                        <label>Email</label>
+                        <label>{t('ui.auth.email')}</label>
                         <Input value={email} isLight disabled />
                     </div>
                     <div css={tw`mt-6`}>
                         <Field
                             light
-                            label={'New Password'}
+                            label={t('ui.auth.new_password')}
                             name={'password'}
                             type={'password'}
-                            description={'Passwords must be at least 8 characters in length.'}
+                            description={t('ui.auth.password_description')}
                         />
                     </div>
                     <div css={tw`mt-6`}>
-                        <Field light label={'Confirm New Password'} name={'passwordConfirmation'} type={'password'} />
+                        <Field
+                            light
+                            label={t('ui.auth.confirm_new_password')}
+                            name={'passwordConfirmation'}
+                            type={'password'}
+                        />
                     </div>
                     <div css={tw`mt-6`}>
                         <Button size={'xlarge'} type={'submit'} disabled={isSubmitting} isLoading={isSubmitting}>
-                            Reset Password
+                            {t('ui.auth.reset_password_button')}
                         </Button>
                     </div>
                     <div css={tw`mt-6 text-center`}>
@@ -88,7 +94,7 @@ export default ({ match, location }: RouteComponentProps<{ token: string }>) => 
                             to={'/auth/login'}
                             css={tw`text-xs text-neutral-500 tracking-wide no-underline uppercase hover:text-neutral-600`}
                         >
-                            Return to Login
+                            {t('ui.auth.return_to_login')}
                         </Link>
                     </div>
                 </LoginFormContainer>

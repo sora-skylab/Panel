@@ -13,6 +13,7 @@ import Button from '@/components/elements/Button';
 import Input, { Textarea } from '@/components/elements/Input';
 import styled from 'styled-components/macro';
 import ApiKeyModal from '@/components/dashboard/ApiKeyModal';
+import { t } from '@/lib/locale';
 
 interface Values {
     description: string;
@@ -59,24 +60,22 @@ export default ({ onKeyCreated }: { onKeyCreated: (key: ApiKey) => void }) => {
                     <Form>
                         <SpinnerOverlay visible={isSubmitting} />
                         <FormikFieldWrapper
-                            label={'Description'}
+                            label={t('ui.dashboard.description_label')}
                             name={'description'}
-                            description={'A description of this API key.'}
+                            description={t('ui.dashboard.api_key_description')}
                             css={tw`mb-6`}
                         >
                             <Field name={'description'} as={Input} />
                         </FormikFieldWrapper>
                         <FormikFieldWrapper
-                            label={'Allowed IPs'}
+                            label={t('ui.dashboard.allowed_ips')}
                             name={'allowedIps'}
-                            description={
-                                'Leave blank to allow any IP address to use this API key, otherwise provide each IP address on a new line.'
-                            }
+                            description={t('ui.dashboard.allowed_ips_description')}
                         >
                             <Field name={'allowedIps'} as={CustomTextarea} />
                         </FormikFieldWrapper>
                         <div css={tw`flex justify-end mt-6`}>
-                            <Button>Create</Button>
+                            <Button>{t('ui.common.create')}</Button>
                         </div>
                     </Form>
                 )}

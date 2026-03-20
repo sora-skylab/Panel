@@ -20,6 +20,7 @@ import { useLocation } from 'react-router';
 import ConflictStateRenderer from '@/components/server/ConflictStateRenderer';
 import PermissionRoute from '@/components/elements/PermissionRoute';
 import routes from '@/routers/routes';
+import { t } from '@/lib/locale';
 
 export default () => {
     const match = useRouteMatch<{ id: string }>();
@@ -82,12 +83,12 @@ export default () => {
                                         route.permission ? (
                                             <Can key={route.path} action={route.permission} matchAny>
                                                 <NavLink to={to(route.path, true)} exact={route.exact}>
-                                                    {route.name}
+                                                    {route.name ? t(route.name) : route.name}
                                                 </NavLink>
                                             </Can>
                                         ) : (
                                             <NavLink key={route.path} to={to(route.path, true)} exact={route.exact}>
-                                                {route.name}
+                                                {route.name ? t(route.name) : route.name}
                                             </NavLink>
                                         )
                                     )}

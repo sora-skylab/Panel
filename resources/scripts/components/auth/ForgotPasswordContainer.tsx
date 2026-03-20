@@ -12,6 +12,7 @@ import tw from 'twin.macro';
 import Button from '@/components/elements/Button';
 import Reaptcha from 'reaptcha';
 import useFlash from '@/plugins/useFlash';
+import { t } from '@/lib/locale';
 
 interface Values {
     email: string;
@@ -38,7 +39,7 @@ export default () => {
                 console.error(error);
 
                 setSubmitting(false);
-                addFlash({ type: 'error', title: 'Error', message: httpErrorToHuman(error) });
+                addFlash({ type: 'error', title: t('ui.common.error'), message: httpErrorToHuman(error) });
             });
 
             return;
@@ -47,11 +48,11 @@ export default () => {
         requestPasswordResetEmail(email, token)
             .then((response) => {
                 resetForm();
-                addFlash({ type: 'success', title: 'Success', message: response });
+                addFlash({ type: 'success', title: t('ui.common.success'), message: response });
             })
             .catch((error) => {
                 console.error(error);
-                addFlash({ type: 'error', title: 'Error', message: httpErrorToHuman(error) });
+                addFlash({ type: 'error', title: t('ui.common.error'), message: httpErrorToHuman(error) });
             })
             .then(() => {
                 setToken('');
@@ -67,24 +68,22 @@ export default () => {
             initialValues={{ email: '' }}
             validationSchema={object().shape({
                 email: string()
-                    .email('A valid email address must be provided to continue.')
-                    .required('A valid email address must be provided to continue.'),
+                    .email(t('ui.auth.validation.valid_email_required'))
+                    .required(t('ui.auth.validation.valid_email_required')),
             })}
         >
             {({ isSubmitting, setSubmitting, submitForm }) => (
-                <LoginFormContainer title={'Request Password Reset'} css={tw`w-full flex`}>
+                <LoginFormContainer title={t('ui.auth.request_password_reset')} css={tw`w-full flex`}>
                     <Field
                         light
-                        label={'Email'}
-                        description={
-                            'Enter your account email address to receive instructions on resetting your password.'
-                        }
+                        label={t('ui.auth.email')}
+                        description={t('auth.forgot_password.label_help', { ns: 'auth' })}
                         name={'email'}
                         type={'email'}
                     />
                     <div css={tw`mt-6`}>
                         <Button type={'submit'} size={'xlarge'} disabled={isSubmitting} isLoading={isSubmitting}>
-                            Send Email
+                            {t('ui.auth.send_email')}
                         </Button>
                     </div>
                     {recaptchaEnabled && (
@@ -107,7 +106,7 @@ export default () => {
                             to={'/auth/login'}
                             css={tw`text-xs text-neutral-500 tracking-wide uppercase no-underline hover:text-neutral-700`}
                         >
-                            Return to Login
+                            {t('ui.auth.return_to_login')}
                         </Link>
                     </div>
                 </LoginFormContainer>

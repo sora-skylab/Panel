@@ -3,6 +3,7 @@ import { ServerContext } from '@/state/server';
 import { NavLink, useLocation } from 'react-router-dom';
 import { encodePathSegments, hashToPath } from '@/helpers';
 import tw from 'twin.macro';
+import { t } from '@/lib/locale';
 
 interface Props {
     renderLeft?: JSX.Element;
@@ -39,9 +40,9 @@ export default ({ renderLeft, withinFileEditor, isNewFile }: Props) => {
 
     return (
         <div css={tw`flex flex-grow-0 items-center text-sm text-neutral-500 overflow-x-hidden`}>
-            {renderLeft || <div css={tw`w-12`} />}/<span css={tw`px-1 text-neutral-300`}>home</span>/
+            {renderLeft || <div css={tw`w-12`} />}/<span css={tw`px-1 text-neutral-300`}>{t('ui.server.files.home')}</span>/
             <NavLink to={`/server/${id}/files`} css={tw`px-1 text-neutral-200 no-underline hover:text-neutral-100`}>
-                container
+                {t('ui.server.files.container')}
             </NavLink>
             /
             {breadcrumbs().map((crumb, index) =>

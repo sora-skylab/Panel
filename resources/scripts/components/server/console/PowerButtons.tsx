@@ -4,6 +4,7 @@ import Can from '@/components/elements/Can';
 import { ServerContext } from '@/state/server';
 import { PowerAction } from '@/components/server/console/ServerConsoleContainer';
 import { Dialog } from '@/components/elements/dialog';
+import { t } from '@/lib/locale';
 
 interface PowerButtonProps {
     className?: string;
@@ -42,11 +43,11 @@ export default ({ className }: PowerButtonProps) => {
                 open={open}
                 hideCloseIcon
                 onClose={() => setOpen(false)}
-                title={'Forcibly Stop Process'}
-                confirm={'Continue'}
+                title={t('ui.server.power.forcibly_stop_process')}
+                confirm={t('ui.common.continue')}
                 onConfirmed={onButtonClick.bind(this, 'kill-confirmed')}
             >
-                Forcibly stopping a server can lead to data corruption.
+                {t('ui.server.power.forcibly_stop_message')}
             </Dialog.Confirm>
             <Can action={'control.start'}>
                 <Button
@@ -54,12 +55,12 @@ export default ({ className }: PowerButtonProps) => {
                     disabled={status !== 'offline'}
                     onClick={onButtonClick.bind(this, 'start')}
                 >
-                    Start
+                    {t('ui.server.power.start')}
                 </Button>
             </Can>
             <Can action={'control.restart'}>
                 <Button.Text className={'flex-1'} disabled={!status} onClick={onButtonClick.bind(this, 'restart')}>
-                    Restart
+                    {t('ui.server.power.restart')}
                 </Button.Text>
             </Can>
             <Can action={'control.stop'}>
@@ -68,7 +69,7 @@ export default ({ className }: PowerButtonProps) => {
                     disabled={status === 'offline'}
                     onClick={onButtonClick.bind(this, killable ? 'kill' : 'stop')}
                 >
-                    {killable ? 'Kill' : 'Stop'}
+                    {killable ? t('ui.server.power.kill') : t('ui.server.power.stop')}
                 </Button.Danger>
             </Can>
         </div>

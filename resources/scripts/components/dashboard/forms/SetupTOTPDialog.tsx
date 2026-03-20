@@ -14,6 +14,7 @@ import FlashMessageRender from '@/components/FlashMessageRender';
 import { Actions, useStoreActions } from 'easy-peasy';
 import { ApplicationStore } from '@/state';
 import asDialog from '@/hoc/asDialog';
+import { t } from '@/lib/locale';
 
 interface Props {
     onTokens: (tokens: string[]) => void;
@@ -70,12 +71,11 @@ const ConfigureTwoFactorForm = ({ onTokens }: Props) => {
             </div>
             <CopyOnClick text={token?.secret}>
                 <p className={'font-mono text-sm text-gray-100 text-center mt-2'}>
-                    {token?.secret.match(/.{1,4}/g)!.join(' ') || 'Loading...'}
+                    {token?.secret.match(/.{1,4}/g)!.join(' ') || t('ui.common.loading')}
                 </p>
             </CopyOnClick>
             <p id={'totp-code-description'} className={'mt-6'}>
-                Scan the QR code above using the two-step authentication app of your choice. Then, enter the 6-digit
-                code generated into the field below.
+                {t('ui.dashboard.scan_qr_description')}
             </p>
             <Input.Text
                 aria-labelledby={'totp-code-description'}
@@ -90,7 +90,7 @@ const ConfigureTwoFactorForm = ({ onTokens }: Props) => {
                 pattern={'\\d{6}'}
             />
             <label htmlFor={'totp-password'} className={'block mt-3'}>
-                Account Password
+                {t('ui.dashboard.account_password')}
             </label>
             <Input.Text
                 variant={Input.Text.Variants.Loose}
@@ -100,13 +100,13 @@ const ConfigureTwoFactorForm = ({ onTokens }: Props) => {
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPassword(e.currentTarget.value)}
             />
             <Dialog.Footer>
-                <Button.Text onClick={close}>Cancel</Button.Text>
+                <Button.Text onClick={close}>{t('ui.common.cancel')}</Button.Text>
                 <Tooltip
                     disabled={password.length > 0 && value.length === 6}
                     content={
                         !token
-                            ? 'Waiting for QR code to load...'
-                            : 'You must enter the 6-digit code and your password to continue.'
+                            ? t('ui.dashboard.qr_waiting')
+                            : t('ui.dashboard.two_step_code_password_required')
                     }
                     delay={100}
                 >
@@ -115,7 +115,7 @@ const ConfigureTwoFactorForm = ({ onTokens }: Props) => {
                         type={'submit'}
                         form={'enable-totp-form'}
                     >
-                        Enable
+                        {t('ui.common.enable')}
                     </Button>
                 </Tooltip>
             </Dialog.Footer>
@@ -124,7 +124,6 @@ const ConfigureTwoFactorForm = ({ onTokens }: Props) => {
 };
 
 export default asDialog({
-    title: 'Enable Two-Step Verification',
-    description:
-        "Help protect your account from unauthorized access. You'll be prompted for a verification code each time you sign in.",
+    title: t('ui.dashboard.enable_two_step_title'),
+    description: t('ui.dashboard.enable_two_step_description'),
 })(ConfigureTwoFactorForm);

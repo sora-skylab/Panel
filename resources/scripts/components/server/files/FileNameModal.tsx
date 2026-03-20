@@ -7,6 +7,7 @@ import { ServerContext } from '@/state/server';
 import { join } from 'pathe';
 import tw from 'twin.macro';
 import Button from '@/components/elements/Button';
+import { t } from '@/lib/locale';
 
 type Props = RequiredModalProps & {
     onFileNamed: (name: string) => void;
@@ -29,7 +30,7 @@ export default ({ onFileNamed, onDismissed, ...props }: Props) => {
             onSubmit={submit}
             initialValues={{ fileName: '' }}
             validationSchema={object().shape({
-                fileName: string().required().min(1),
+                fileName: string().required(t('ui.server.files.validation.file_name_required')).min(1),
             })}
         >
             {({ resetForm }) => (
@@ -44,12 +45,12 @@ export default ({ onFileNamed, onDismissed, ...props }: Props) => {
                         <Field
                             id={'fileName'}
                             name={'fileName'}
-                            label={'File Name'}
-                            description={'Enter the name that this file should be saved as.'}
+                            label={t('ui.server.files.file_name')}
+                            description={t('ui.server.files.file_name_description')}
                             autoFocus
                         />
                         <div css={tw`mt-6 text-right`}>
-                            <Button>Create File</Button>
+                            <Button>{t('ui.server.files.create_file')}</Button>
                         </div>
                     </Form>
                 </Modal>

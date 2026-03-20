@@ -6,6 +6,7 @@ import ContentContainer from '@/components/elements/ContentContainer';
 import { CSSTransition } from 'react-transition-group';
 import Spinner from '@/components/elements/Spinner';
 import tw from 'twin.macro';
+import { t } from '@/lib/locale';
 
 const reconnectErrors = ['jwt: exp claim is invalid', 'jwt: created too far in past (denylist)'];
 
@@ -35,7 +36,7 @@ export default () => {
         socket.on('auth success', () => setConnectionState(true));
         socket.on('SOCKET_CLOSE', () => setConnectionState(false));
         socket.on('SOCKET_CONNECT_ERROR', () => {
-            setError('Failed to connect to websocket instance after multiple attempts: try refreshing the page.');
+            setError(t('ui.server.websocket.failed_connect'));
         });
         socket.on('SOCKET_ERROR', () => {
             setError('connecting');
@@ -57,7 +58,7 @@ export default () => {
                 updateToken(uuid, socket);
             } else {
                 setError(
-                    'There was an error validating the credentials provided for the websocket. Please refresh the page.'
+                    t('ui.server.websocket.credential_error')
                 );
             }
         });
@@ -114,9 +115,7 @@ export default () => {
                     {error === 'connecting' ? (
                         <>
                             <Spinner size={'small'} />
-                            <p css={tw`ml-2 text-sm text-red-100`}>
-                                We&apos;re having some trouble connecting to your server, please wait...
-                            </p>
+                            <p css={tw`ml-2 text-sm text-red-100`}>{t('ui.server.websocket.reconnecting')}</p>
                         </>
                     ) : (
                         <p css={tw`ml-2 text-sm text-white`}>{error}</p>

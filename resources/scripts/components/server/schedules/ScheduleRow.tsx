@@ -2,9 +2,9 @@ import React from 'react';
 import { Schedule } from '@/api/server/schedules/getServerSchedules';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCalendarAlt } from '@fortawesome/free-solid-svg-icons';
-import { format } from 'date-fns';
 import tw from 'twin.macro';
 import ScheduleCronRow from '@/components/server/schedules/ScheduleCronRow';
+import { formatDateTime, t } from '@/lib/locale';
 
 export default ({ schedule }: { schedule: Schedule }) => (
     <>
@@ -14,7 +14,10 @@ export default ({ schedule }: { schedule: Schedule }) => (
         <div css={tw`flex-1 md:ml-4`}>
             <p>{schedule.name}</p>
             <p css={tw`text-xs text-neutral-400`}>
-                Last run at: {schedule.lastRunAt ? format(schedule.lastRunAt, "MMM do 'at' h:mma") : 'never'}
+                {t('ui.server.schedules.last_run_at')}{' '}
+                {schedule.lastRunAt
+                    ? formatDateTime(schedule.lastRunAt, "MMM do 'at' h:mma", 'yyyy/MM/dd HH:mm')
+                    : t('ui.common.never')}
             </p>
         </div>
         <div>
@@ -24,7 +27,7 @@ export default ({ schedule }: { schedule: Schedule }) => (
                     schedule.isActive ? tw`bg-green-600` : tw`bg-neutral-400`,
                 ]}
             >
-                {schedule.isActive ? 'Active' : 'Inactive'}
+                {schedule.isActive ? t('ui.server.statuses.active') : t('ui.server.statuses.inactive')}
             </p>
         </div>
         <ScheduleCronRow cron={schedule.cron} css={tw`mx-auto sm:mx-8 w-full sm:w-auto mt-4 sm:mt-0`} />
@@ -35,7 +38,11 @@ export default ({ schedule }: { schedule: Schedule }) => (
                     schedule.isActive && !schedule.isProcessing ? tw`bg-green-600` : tw`bg-neutral-400`,
                 ]}
             >
-                {schedule.isProcessing ? 'Processing' : schedule.isActive ? 'Active' : 'Inactive'}
+                {schedule.isProcessing
+                    ? t('ui.server.statuses.processing')
+                    : schedule.isActive
+                    ? t('ui.server.statuses.active')
+                    : t('ui.server.statuses.inactive')}
             </p>
         </div>
     </>

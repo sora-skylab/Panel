@@ -1,7 +1,7 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFileAlt, faFileArchive, faFileImport, faFolder } from '@fortawesome/free-solid-svg-icons';
 import { encodePathSegments } from '@/helpers';
-import { differenceInHours, format, formatDistanceToNow } from 'date-fns';
+import { differenceInHours } from 'date-fns';
 import React, { memo } from 'react';
 import { FileObject } from '@/api/server/files/loadDirectory';
 import FileDropdownMenu from '@/components/server/files/FileDropdownMenu';
@@ -14,6 +14,7 @@ import { usePermissions } from '@/plugins/usePermissions';
 import { join } from 'pathe';
 import { bytesToString } from '@/lib/formatters';
 import styles from './style.module.css';
+import { formatDateTime, formatRelativeTime } from '@/lib/locale';
 
 const Clickable: React.FC<{ file: FileObject }> = memo(({ file, children }) => {
     const [canRead] = usePermissions(['file.read']);
@@ -58,8 +59,8 @@ const FileObjectRow = ({ file }: { file: FileObject }) => (
             {file.isFile && <div css={tw`w-1/6 text-right mr-4 hidden sm:block`}>{bytesToString(file.size)}</div>}
             <div css={tw`w-1/5 text-right mr-4 hidden md:block`} title={file.modifiedAt.toString()}>
                 {Math.abs(differenceInHours(file.modifiedAt, new Date())) > 48
-                    ? format(file.modifiedAt, 'MMM do, yyyy h:mma')
-                    : formatDistanceToNow(file.modifiedAt, { addSuffix: true })}
+                    ? formatDateTime(file.modifiedAt, 'MMM do, yyyy h:mma', 'yyyy/MM/dd HH:mm')
+                    : formatRelativeTime(file.modifiedAt, { addSuffix: true })}
             </div>
         </Clickable>
         <FileDropdownMenu file={file} />

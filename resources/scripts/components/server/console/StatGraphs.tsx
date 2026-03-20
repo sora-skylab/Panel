@@ -10,15 +10,16 @@ import { CloudDownloadIcon, CloudUploadIcon } from '@heroicons/react/solid';
 import { theme } from 'twin.macro';
 import ChartBlock from '@/components/server/console/ChartBlock';
 import Tooltip from '@/components/elements/tooltip/Tooltip';
+import { t } from '@/lib/locale';
 
 export default () => {
     const status = ServerContext.useStoreState((state) => state.status.value);
     const limits = ServerContext.useStoreState((state) => state.server.data!.limits);
     const previous = useRef<Record<'tx' | 'rx', number>>({ tx: -1, rx: -1 });
 
-    const cpu = useChartTickLabel('CPU', limits.cpu, '%', 2);
-    const memory = useChartTickLabel('Memory', limits.memory, 'MiB');
-    const network = useChart('Network', {
+    const cpu = useChartTickLabel(t('ui.server.details.cpu_load'), limits.cpu, '%', 2);
+    const memory = useChartTickLabel(t('ui.server.details.memory'), limits.memory, 'MiB');
+    const network = useChart(t('ui.server.details.network'), {
         sets: 2,
         options: {
             scales: {
@@ -34,7 +35,7 @@ export default () => {
         callback(opts, index) {
             return {
                 ...opts,
-                label: !index ? 'Network In' : 'Network Out',
+                label: !index ? t('ui.server.details.inbound') : t('ui.server.details.outbound'),
                 borderColor: !index ? theme('colors.cyan.400') : theme('colors.yellow.400'),
                 backgroundColor: hexToRgba(!index ? theme('colors.cyan.700') : theme('colors.yellow.700'), 0.5),
             };
@@ -68,20 +69,20 @@ export default () => {
 
     return (
         <>
-            <ChartBlock title={'CPU Load'}>
+            <ChartBlock title={t('ui.server.details.cpu_load')}>
                 <Line {...cpu.props} />
             </ChartBlock>
-            <ChartBlock title={'Memory'}>
+            <ChartBlock title={t('ui.server.details.memory')}>
                 <Line {...memory.props} />
             </ChartBlock>
             <ChartBlock
-                title={'Network'}
+                title={t('ui.server.details.network')}
                 legend={
                     <>
-                        <Tooltip arrow content={'Inbound'}>
+                        <Tooltip arrow content={t('ui.server.details.inbound')}>
                             <CloudDownloadIcon className={'mr-2 w-4 h-4 text-yellow-400'} />
                         </Tooltip>
-                        <Tooltip arrow content={'Outbound'}>
+                        <Tooltip arrow content={t('ui.server.details.outbound')}>
                             <CloudUploadIcon className={'w-4 h-4 text-cyan-400'} />
                         </Tooltip>
                     </>

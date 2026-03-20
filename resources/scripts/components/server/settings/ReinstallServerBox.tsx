@@ -8,6 +8,7 @@ import { httpErrorToHuman } from '@/api/http';
 import tw from 'twin.macro';
 import { Button } from '@/components/elements/button/index';
 import { Dialog } from '@/components/elements/dialog';
+import { t } from '@/lib/locale';
 
 export default () => {
     const uuid = ServerContext.useStoreState((state) => state.server.data!.uuid);
@@ -21,7 +22,7 @@ export default () => {
                 addFlash({
                     key: 'settings',
                     type: 'success',
-                    message: 'Your server has begun the reinstallation process.',
+                    message: t('ui.server.settings.reinstall_started'),
                 });
             })
             .catch((error) => {
@@ -37,28 +38,23 @@ export default () => {
     }, []);
 
     return (
-        <TitledGreyBox title={'Reinstall Server'} css={tw`relative`}>
+        <TitledGreyBox title={t('ui.server.settings.reinstall_server')} css={tw`relative`}>
             <Dialog.Confirm
                 open={modalVisible}
-                title={'Confirm server reinstallation'}
-                confirm={'Yes, reinstall server'}
+                title={t('ui.server.settings.confirm_reinstall_title')}
+                confirm={t('ui.server.settings.confirm_reinstall_button')}
                 onClose={() => setModalVisible(false)}
                 onConfirmed={reinstall}
             >
-                Your server will be stopped and some files may be deleted or modified during this process, are you sure
-                you wish to continue?
+                {t('ui.server.settings.confirm_reinstall_description')}
             </Dialog.Confirm>
             <p css={tw`text-sm`}>
-                Reinstalling your server will stop it, and then re-run the installation script that initially set it
-                up.&nbsp;
-                <strong css={tw`font-medium`}>
-                    Some files may be deleted or modified during this process, please back up your data before
-                    continuing.
-                </strong>
+                {t('ui.server.settings.reinstall_description')}&nbsp;
+                <strong css={tw`font-medium`}>{t('ui.server.settings.reinstall_warning')}</strong>
             </p>
             <div css={tw`mt-6 text-right`}>
                 <Button.Danger variant={Button.Variants.Secondary} onClick={() => setModalVisible(true)}>
-                    Reinstall Server
+                    {t('ui.server.settings.reinstall_server')}
                 </Button.Danger>
             </div>
         </TitledGreyBox>

@@ -14,6 +14,7 @@ import tw from 'twin.macro';
 import Label from '@/components/elements/Label';
 import FormikFieldWrapper from '@/components/elements/FormikFieldWrapper';
 import { Textarea } from '@/components/elements/Input';
+import { t } from '@/lib/locale';
 
 interface Values {
     name: string;
@@ -24,18 +25,18 @@ const RenameServerBox = () => {
     const { isSubmitting } = useFormikContext<Values>();
 
     return (
-        <TitledGreyBox title={'Change Server Details'} css={tw`relative`}>
+        <TitledGreyBox title={t('ui.server.settings.change_server_details')} css={tw`relative`}>
             <SpinnerOverlay visible={isSubmitting} />
             <Form css={tw`mb-0`}>
-                <Field id={'name'} name={'name'} label={'Server Name'} type={'text'} />
+                <Field id={'name'} name={'name'} label={t('ui.server.settings.server_name')} type={'text'} />
                 <div css={tw`mt-6`}>
-                    <Label>Server Description</Label>
+                    <Label>{t('ui.server.settings.server_description')}</Label>
                     <FormikFieldWrapper name={'description'}>
                         <FormikField as={Textarea} name={'description'} rows={3} />
                     </FormikFieldWrapper>
                 </div>
                 <div css={tw`mt-6 text-right`}>
-                    <Button type={'submit'}>Save</Button>
+                    <Button type={'submit'}>{t('ui.common.save')}</Button>
                 </div>
             </Form>
         </TitledGreyBox>
@@ -66,7 +67,7 @@ export default () => {
                 description: server.description,
             }}
             validationSchema={object().shape({
-                name: string().required().min(1),
+                name: string().required(t('ui.server.settings.validation.server_name_required')).min(1),
                 description: string().nullable(),
             })}
         >

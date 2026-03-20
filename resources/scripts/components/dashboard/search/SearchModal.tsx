@@ -14,6 +14,7 @@ import styled from 'styled-components/macro';
 import tw from 'twin.macro';
 import Input from '@/components/elements/Input';
 import { ip } from '@/lib/formatters';
+import { t } from '@/lib/locale';
 
 type Props = RequiredModalProps;
 
@@ -80,7 +81,7 @@ export default ({ ...props }: Props) => {
         <Formik
             onSubmit={search}
             validationSchema={object().shape({
-                term: string().min(3, 'Please enter at least three characters to begin searching.'),
+                term: string().min(3, t('ui.dashboard.minimum_three_characters')),
             })}
             initialValues={{ term: '' } as Values}
         >
@@ -89,8 +90,8 @@ export default ({ ...props }: Props) => {
                     <Form>
                         <FormikFieldWrapper
                             name={'term'}
-                            label={'Search term'}
-                            description={'Enter a server name, uuid, or allocation to begin searching.'}
+                            label={t('ui.dashboard.search_term')}
+                            description={t('ui.dashboard.search_description')}
                         >
                             <SearchWatcher />
                             <InputSpinner visible={isSubmitting}>

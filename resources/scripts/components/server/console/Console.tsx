@@ -16,6 +16,7 @@ import { usePersistedState } from '@/plugins/usePersistedState';
 import { SocketEvent, SocketRequest } from '@/components/server/events';
 import classNames from 'classnames';
 import { ChevronDoubleRightIcon } from '@heroicons/react/solid';
+import { t, translateServerStatus } from '@/lib/locale';
 
 import 'xterm/css/xterm.css';
 import styles from './style.module.css';
@@ -81,7 +82,7 @@ export default () => {
         switch (status) {
             // Sent by either the source or target node if a failure occurs.
             case 'failure':
-                terminal.writeln(TERMINAL_PRELUDE + 'Transfer has failed.\u001b[0m');
+                terminal.writeln(TERMINAL_PRELUDE + t('ui.server.console.transfer_failed') + '\u001b[0m');
                 return;
         }
     };
@@ -92,7 +93,9 @@ export default () => {
         );
 
     const handlePowerChangeEvent = (state: string) =>
-        terminal.writeln(TERMINAL_PRELUDE + 'Server marked as ' + state + '...\u001b[0m');
+        terminal.writeln(
+            TERMINAL_PRELUDE + t('ui.server.console.marked_as', { state: translateServerStatus(state) }) + '\u001b[0m'
+        );
 
     const handleCommandKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
         if (e.key === 'ArrowUp') {
@@ -213,8 +216,8 @@ export default () => {
                     <input
                         className={classNames('peer', styles.command_input)}
                         type={'text'}
-                        placeholder={'Type a command...'}
-                        aria-label={'Console command input.'}
+                        placeholder={t('ui.server.console.command_placeholder')}
+                        aria-label={t('ui.server.console.command_input')}
                         disabled={!instance || !connected}
                         onKeyDown={handleCommandKeyDown}
                         autoCorrect={'off'}
