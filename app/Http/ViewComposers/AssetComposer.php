@@ -33,6 +33,7 @@ class AssetComposer
         $view->with('localeData', $this->translations->loadLocales([$currentLocale, $fallbackLocale]));
         $view->with('siteConfiguration', [
             'name' => config('app.name') ?? 'Pterodactyl',
+            'footerCustomText' => config('app.footer_custom_text') ?? '',
             'locale' => $currentLocale,
             'availableLanguages' => $this->getAvailableLanguages(true),
             'recaptcha' => [

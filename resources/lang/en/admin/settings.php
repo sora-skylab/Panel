@@ -26,6 +26,8 @@ return [
         'require_2fa_description' => 'If enabled, any account falling into the selected grouping will be required to have 2-Factor authentication enabled to use the Panel.',
         'default_language' => 'Default Language',
         'default_language_description' => 'The default language to use when rendering UI components.',
+        'footer_custom_text' => 'Footer Custom Text',
+        'footer_custom_text_description' => 'Displayed below the default Pterodactyl copyright on the login page and client dashboard. Plain text only; line breaks are preserved.',
     ],
     'advanced_settings' => [
         'page_title' => 'Advanced Settings',

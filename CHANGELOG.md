@@ -3,6 +3,10 @@ This file is a running track of new features and fixes to each version of the pa
 
 This project follows [Semantic Versioning](http://semver.org) guidelines.
 
+## v1.0.26
+### Added
+* Added a configurable footer text setting that is rendered below the default Pterodactyl copyright on the login page and client dashboard.
+
 ## v1.0.25
 ### Fixed
 * Fixed the admin overview Blade template so the automatic updater widget no longer triggers a 500 error from an `Unclosed '['` parse failure while rendering `/admin`.

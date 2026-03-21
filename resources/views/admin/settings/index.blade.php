@@ -63,6 +63,15 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="row">
+                            <div class="form-group col-xs-12">
+                                <label class="control-label">@lang('admin/settings.general.footer_custom_text')</label>
+                                <div>
+                                    <textarea class="form-control" name="app:footer_custom_text" rows="4" maxlength="1000">{{ old('app:footer_custom_text', config('app.footer_custom_text')) }}</textarea>
+                                    <p class="text-muted"><small>@lang('admin/settings.general.footer_custom_text_description')</small></p>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     <div class="box-footer">
                         {!! csrf_field() !!}

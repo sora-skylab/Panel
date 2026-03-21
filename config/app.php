@@ -27,6 +27,19 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Application Footer Text
+    |--------------------------------------------------------------------------
+    |
+    | Plain text displayed below the default Pterodactyl footer on the login
+    | page and client dashboard. This can be overridden dynamically from the
+    | admin settings UI when database-backed settings are enabled.
+    |
+    */
+
+    'footer_custom_text' => env('APP_FOOTER_CUSTOM_TEXT', ''),
+
+    /*
+    |--------------------------------------------------------------------------
     | Application Environment
     |--------------------------------------------------------------------------
     |

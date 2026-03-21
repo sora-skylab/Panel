@@ -18,6 +18,7 @@ class SettingsServiceProvider extends ServiceProvider
      */
     protected array $keys = [
         'app:name',
+        'app:footer_custom_text',
         'app:locale',
         'recaptcha:provider',
         'recaptcha:enabled',
