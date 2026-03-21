@@ -10,6 +10,7 @@ use Illuminate\Contracts\Cache\Repository as CacheRepository;
 class SoftwareVersionService
 {
     public const VERSION_CACHE_KEY = 'pterodactyl:versioning_data:v2';
+    public const FAILURE_CACHE_MINUTES = 5;
 
     private static array $result;
 
@@ -111,7 +112,11 @@ class SoftwareVersionService
         }
 
         $data = $this->fetchVersionData();
-        $ttl = CarbonImmutable::now()->addMinutes(config('pterodactyl.versioning.cache_time', 60));
+        $ttl = CarbonImmutable::now()->addMinutes(
+            Arr::get($data, 'fetched', false)
+                ? config('pterodactyl.versioning.cache_time', 60)
+                : min(config('pterodactyl.versioning.cache_time', 60), self::FAILURE_CACHE_MINUTES),
+        );
 
         $this->cache->put(self::VERSION_CACHE_KEY, $data, $ttl);
 
@@ -131,6 +136,8 @@ class SoftwareVersionService
                 'panel_repository_url' => config('pterodactyl.versioning.panel.repository_url'),
                 'discord' => config('pterodactyl.versioning.support.discord_url'),
                 'donations' => config('pterodactyl.versioning.support.donations_url'),
+                'resolved_against' => config('app.version', 'error'),
+                'fetched' => filled(Arr::get($panelRelease, 'tag_name')) || filled(Arr::get($wingsRelease, 'tag_name')),
             ];
         } catch (\Exception) {
             return [
@@ -140,6 +147,8 @@ class SoftwareVersionService
                 'panel_repository_url' => config('pterodactyl.versioning.panel.repository_url'),
                 'discord' => config('pterodactyl.versioning.support.discord_url'),
                 'donations' => config('pterodactyl.versioning.support.donations_url'),
+                'resolved_against' => config('app.version', 'error'),
+                'fetched' => false,
             ];
         }
     }
@@ -152,7 +161,8 @@ class SoftwareVersionService
 
         return filled(Arr::get($data, 'panel'))
             && filled(Arr::get($data, 'panel_release_url'))
-            && Arr::get($data, 'panel_repository_url') === config('pterodactyl.versioning.panel.repository_url');
+            && Arr::get($data, 'panel_repository_url') === config('pterodactyl.versioning.panel.repository_url')
+            && Arr::get($data, 'resolved_against') === config('app.version', 'error');
     }
 
     protected function requestReleaseData(?string $url): array

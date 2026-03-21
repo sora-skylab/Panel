@@ -3,6 +3,11 @@ This file is a running track of new features and fixes to each version of the pa
 
 This project follows [Semantic Versioning](http://semver.org) guidelines.
 
+## v1.0.27
+### Fixed
+* Forced the release-version cache to refresh whenever the installed Panel version changes, fixing the case where the admin updater kept showing an older GitHub release after a successful Panel upgrade.
+* Shortened the cache lifetime for failed version checks so a transient GitHub API issue does not hide new releases for a full hour.
+
 ## v1.0.26
 ### Added
 * Added a configurable footer text setting that is rendered below the default Pterodactyl copyright on the login page and client dashboard.
