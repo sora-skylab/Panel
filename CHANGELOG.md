@@ -3,6 +3,10 @@ This file is a running track of new features and fixes to each version of the pa
 
 This project follows [Semantic Versioning](http://semver.org) guidelines.
 
+## v1.0.19
+### Fixed
+* Hardened the Cloudflare Turnstile script loader so stale failed script tags are discarded and the widget can recover cleanly instead of intermittently rendering nothing on auth pages.
+
 ## v1.0.18
 ### Fixed
 * Applied captcha protection to the password reset submission flow so login, forgot password, and password reset all enforce the configured captcha provider server-side.

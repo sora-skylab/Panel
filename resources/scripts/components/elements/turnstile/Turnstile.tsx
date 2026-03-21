@@ -40,6 +40,8 @@ type Props = {
 };
 
 const SCRIPT_SOURCE = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
+const SCRIPT_SELECTOR = 'script[data-turnstile-loader="true"]';
+const LOAD_TIMEOUT = 10000;
 let scriptLoader: Promise<TurnstileApi> | null = null;
 
 const loadTurnstile = (): Promise<TurnstileApi> => {
@@ -53,36 +55,69 @@ const loadTurnstile = (): Promise<TurnstileApi> => {
 
     if (!scriptLoader) {
         scriptLoader = new Promise<TurnstileApi>((resolve, reject) => {
-            const resolveWhenReady = () => {
-                if (!window.turnstile) {
-                    reject(new Error('Cloudflare Turnstile failed to initialize.'));
+            let settled = false;
+            let timeoutId = 0;
+
+            const finish = (callback: () => void) => {
+                if (settled) {
                     return;
                 }
 
-                window.turnstile.ready(() => resolve(window.turnstile!));
+                settled = true;
+                window.clearTimeout(timeoutId);
+                callback();
             };
 
-            const handleError = () => reject(new Error('Failed to load the Cloudflare Turnstile script.'));
-            const existing = document.querySelector<HTMLScriptElement>(`script[src="${SCRIPT_SOURCE}"]`);
-
-            if (existing) {
-                existing.addEventListener('load', resolveWhenReady, { once: true });
-                existing.addEventListener('error', handleError, { once: true });
-
-                if (window.turnstile) {
-                    resolveWhenReady();
+            const fail = (message: string) => {
+                if (script.isConnected && !window.turnstile) {
+                    script.remove();
                 }
 
+                finish(() => reject(new Error(message)));
+            };
+
+            const resolveWhenReady = (attempts = 20) => {
+                if (window.turnstile) {
+                    window.turnstile.ready(() => finish(() => resolve(window.turnstile!)));
+                    return;
+                }
+
+                if (attempts === 0) {
+                    fail('Cloudflare Turnstile failed to initialize.');
+                    return;
+                }
+
+                window.setTimeout(() => resolveWhenReady(attempts - 1), 50);
+            };
+
+            const existing = document.querySelector<HTMLScriptElement>(SCRIPT_SELECTOR);
+            if (existing && !window.turnstile) {
+                existing.remove();
+            }
+
+            const script =
+                document.querySelector<HTMLScriptElement>(SCRIPT_SELECTOR) ?? document.createElement('script');
+
+            const handleLoad = () => resolveWhenReady();
+            const handleError = () => fail('Failed to load the Cloudflare Turnstile script.');
+
+            timeoutId = window.setTimeout(() => fail('Cloudflare Turnstile did not finish loading.'), LOAD_TIMEOUT);
+
+            if (window.turnstile) {
+                resolveWhenReady();
                 return;
             }
 
-            const script = document.createElement('script');
-            script.src = SCRIPT_SOURCE;
-            script.async = true;
-            script.defer = true;
-            script.addEventListener('load', resolveWhenReady, { once: true });
+            script.addEventListener('load', handleLoad, { once: true });
             script.addEventListener('error', handleError, { once: true });
-            document.head.appendChild(script);
+
+            if (!script.isConnected) {
+                script.src = SCRIPT_SOURCE;
+                script.async = true;
+                script.defer = true;
+                script.dataset.turnstileLoader = 'true';
+                document.head.appendChild(script);
+            }
         }).catch((error) => {
             scriptLoader = null;
             throw error;
