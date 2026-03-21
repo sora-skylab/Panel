@@ -3,6 +3,10 @@ This file is a running track of new features and fixes to each version of the pa
 
 This project follows [Semantic Versioning](http://semver.org) guidelines.
 
+## v1.0.20
+### Fixed
+* Increased the Turnstile readiness wait on initial auth page loads and now render directly into the mounted container element to avoid the login page widget missing until after navigating away and back.
+
 ## v1.0.19
 ### Fixed
 * Hardened the Cloudflare Turnstile script loader so stale failed script tags are discarded and the widget can recover cleanly instead of intermittently rendering nothing on auth pages.

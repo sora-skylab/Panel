@@ -42,6 +42,8 @@ type Props = {
 const SCRIPT_SOURCE = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
 const SCRIPT_SELECTOR = 'script[data-turnstile-loader="true"]';
 const LOAD_TIMEOUT = 10000;
+const READY_TIMEOUT = 10000;
+const READY_RETRY_DELAY = 100;
 let scriptLoader: Promise<TurnstileApi> | null = null;
 
 const loadTurnstile = (): Promise<TurnstileApi> => {
@@ -76,18 +78,18 @@ const loadTurnstile = (): Promise<TurnstileApi> => {
                 finish(() => reject(new Error(message)));
             };
 
-            const resolveWhenReady = (attempts = 20) => {
+            const resolveWhenReady = (deadline = Date.now() + READY_TIMEOUT) => {
                 if (window.turnstile) {
                     window.turnstile.ready(() => finish(() => resolve(window.turnstile!)));
                     return;
                 }
 
-                if (attempts === 0) {
+                if (Date.now() >= deadline) {
                     fail('Cloudflare Turnstile failed to initialize.');
                     return;
                 }
 
-                window.setTimeout(() => resolveWhenReady(attempts - 1), 50);
+                window.setTimeout(() => resolveWhenReady(deadline), READY_RETRY_DELAY);
             };
 
             const existing = document.querySelector<HTMLScriptElement>(SCRIPT_SELECTOR);
@@ -130,6 +132,7 @@ const loadTurnstile = (): Promise<TurnstileApi> => {
 export default forwardRef<TurnstileHandle, Props>(({ siteKey, onVerify, onError, onExpire, css }, ref) => {
     const widgetId = useRef<string | null>(null);
     const containerId = useMemo(() => `turnstile-${Math.random().toString(36).slice(2, 10)}`, []);
+    const containerRef = useRef<HTMLDivElement | null>(null);
     const onVerifyRef = useRef(onVerify);
     const onErrorRef = useRef(onError);
     const onExpireRef = useRef(onExpire);
@@ -145,11 +148,13 @@ export default forwardRef<TurnstileHandle, Props>(({ siteKey, onVerify, onError,
 
         loadTurnstile()
             .then((turnstile) => {
-                if (cancelled || widgetId.current) {
+                const container = containerRef.current;
+
+                if (cancelled || widgetId.current || !container) {
                     return;
                 }
 
-                widgetId.current = turnstile.render(`#${containerId}`, {
+                widgetId.current = turnstile.render(container, {
                     sitekey: siteKey,
                     theme: 'auto',
                     size: 'normal',
@@ -191,5 +196,5 @@ export default forwardRef<TurnstileHandle, Props>(({ siteKey, onVerify, onError,
         },
     }), [containerId]);
 
-    return <div id={containerId} css={css} />;
+    return <div id={containerId} ref={containerRef} css={css} />;
 });
