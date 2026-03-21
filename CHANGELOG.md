@@ -3,6 +3,10 @@ This file is a running track of new features and fixes to each version of the pa
 
 This project follows [Semantic Versioning](http://semver.org) guidelines.
 
+## v1.0.13
+### Changed
+* Separated the login page "Forgot password?" link and locale switcher into distinct blocks and increased the vertical spacing so they no longer appear attached.
+
 ## v1.0.12
 ### Changed
 * Changed the Panel's default locale baseline to Japanese for fresh installs, new users, and frontend locale fallbacks.
