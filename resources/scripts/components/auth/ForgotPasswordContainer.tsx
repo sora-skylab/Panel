@@ -128,23 +128,24 @@ export default () => {
                         />
                     )}
                     {captchaEnabled && captchaProvider === 'turnstile' && (
-                        <Turnstile
-                            ref={turnstileRef}
-                            siteKey={siteKey || '_invalid_key'}
-                            onVerify={(response) => {
-                                setToken(response);
-                            }}
-                            onExpire={() => {
-                                setSubmitting(false);
-                                setToken('');
-                            }}
-                            onError={(error) => {
-                                console.error(error);
-                                setSubmitting(false);
-                                addFlash({ type: 'error', title: t('ui.common.error'), message: httpErrorToHuman(error) });
-                            }}
-                            css={tw`mt-6`}
-                        />
+                        <div css={tw`mt-5`}>
+                            <Turnstile
+                                ref={turnstileRef}
+                                siteKey={siteKey || '_invalid_key'}
+                                onVerify={(response) => {
+                                    setToken(response);
+                                }}
+                                onExpire={() => {
+                                    setSubmitting(false);
+                                    setToken('');
+                                }}
+                                onError={(error) => {
+                                    console.error(error);
+                                    setSubmitting(false);
+                                    addFlash({ type: 'error', title: t('ui.common.error'), message: httpErrorToHuman(error) });
+                                }}
+                            />
+                        </div>
                     )}
                     <div css={tw`mt-6 text-center`}>
                         <Link

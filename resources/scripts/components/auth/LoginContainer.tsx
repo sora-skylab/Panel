@@ -136,23 +136,24 @@ const LoginContainer = ({ history }: RouteComponentProps) => {
                         />
                     )}
                     {captchaEnabled && captchaProvider === 'turnstile' && (
-                        <Turnstile
-                            ref={turnstileRef}
-                            siteKey={siteKey || '_invalid_key'}
-                            onVerify={(response) => {
-                                setToken(response);
-                            }}
-                            onExpire={() => {
-                                setSubmitting(false);
-                                setToken('');
-                            }}
-                            onError={(error) => {
-                                console.error(error);
-                                setSubmitting(false);
-                                clearAndAddHttpError({ error });
-                            }}
-                            css={tw`mt-6`}
-                        />
+                        <div css={tw`mt-5`}>
+                            <Turnstile
+                                ref={turnstileRef}
+                                siteKey={siteKey || '_invalid_key'}
+                                onVerify={(response) => {
+                                    setToken(response);
+                                }}
+                                onExpire={() => {
+                                    setSubmitting(false);
+                                    setToken('');
+                                }}
+                                onError={(error) => {
+                                    console.error(error);
+                                    setSubmitting(false);
+                                    clearAndAddHttpError({ error });
+                                }}
+                            />
+                        </div>
                     )}
                     <div css={tw`mt-6 text-center`}>
                         <Link
@@ -162,7 +163,7 @@ const LoginContainer = ({ history }: RouteComponentProps) => {
                             {t('ui.auth.forgot_password')}
                         </Link>
                     </div>
-                    <div css={tw`mt-8 pt-1`}>
+                    <div css={tw`mt-6 pt-1`}>
                         <LocaleSwitcher />
                     </div>
                 </LoginFormContainer>

@@ -3,6 +3,13 @@ This file is a running track of new features and fixes to each version of the pa
 
 This project follows [Semantic Versioning](http://semver.org) guidelines.
 
+## v1.0.17
+### Fixed
+* Prevented the visible Turnstile widget from re-initializing on every auth form render, which could leave it stuck verifying instead of completing successfully.
+
+### Changed
+* Reduced the login page spacing between the password reset link and the language selector, and added explicit top spacing above the visible Turnstile widget.
+
 ## v1.0.16
 ### Fixed
 * Changed Cloudflare Turnstile on authentication forms from a hidden execute-only flow to a visible widget so the verification box actually appears on login and password reset screens.

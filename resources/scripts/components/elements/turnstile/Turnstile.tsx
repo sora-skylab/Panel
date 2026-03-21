@@ -95,6 +95,15 @@ const loadTurnstile = (): Promise<TurnstileApi> => {
 export default forwardRef<TurnstileHandle, Props>(({ siteKey, onVerify, onError, onExpire, css }, ref) => {
     const widgetId = useRef<string | null>(null);
     const containerId = useMemo(() => `turnstile-${Math.random().toString(36).slice(2, 10)}`, []);
+    const onVerifyRef = useRef(onVerify);
+    const onErrorRef = useRef(onError);
+    const onExpireRef = useRef(onExpire);
+
+    useEffect(() => {
+        onVerifyRef.current = onVerify;
+        onErrorRef.current = onError;
+        onExpireRef.current = onExpire;
+    }, [onError, onExpire, onVerify]);
 
     useEffect(() => {
         let cancelled = false;
@@ -107,18 +116,20 @@ export default forwardRef<TurnstileHandle, Props>(({ siteKey, onVerify, onError,
 
                 widgetId.current = turnstile.render(`#${containerId}`, {
                     sitekey: siteKey,
-                    theme: 'light',
-                    size: 'flexible',
+                    theme: 'auto',
+                    size: 'normal',
                     appearance: 'always',
                     execution: 'render',
-                    callback: (token) => onVerify(token),
+                    callback: (token) => onVerifyRef.current(token),
                     'error-callback': (errorCode) =>
-                        onError?.(new Error(`Cloudflare Turnstile validation failed${errorCode ? `: ${errorCode}` : '.'}`)),
-                    'expired-callback': () => onExpire?.(),
-                    'timeout-callback': () => onExpire?.(),
+                        onErrorRef.current?.(
+                            new Error(`Cloudflare Turnstile validation failed${errorCode ? `: ${errorCode}` : '.'}`)
+                        ),
+                    'expired-callback': () => onExpireRef.current?.(),
+                    'timeout-callback': () => onExpireRef.current?.(),
                 });
             })
-            .catch((error) => onError?.(error instanceof Error ? error : new Error(String(error))));
+            .catch((error) => onErrorRef.current?.(error instanceof Error ? error : new Error(String(error))));
 
         return () => {
             cancelled = true;
@@ -128,7 +139,7 @@ export default forwardRef<TurnstileHandle, Props>(({ siteKey, onVerify, onError,
                 widgetId.current = null;
             }
         };
-    }, [containerId, onError, onExpire, onVerify, siteKey]);
+    }, [containerId, siteKey]);
 
     useImperativeHandle(ref, () => ({
         execute: () => {
