@@ -159,7 +159,9 @@ const LoginContainer = ({ history }: RouteComponentProps) => {
                             {t('ui.auth.forgot_password')}
                         </Link>
                     </div>
-                    <LocaleSwitcher css={tw`mt-8`} />
+                    <div css={tw`mt-10 pt-2`}>
+                        <LocaleSwitcher />
+                    </div>
                 </LoginFormContainer>
             )}
         </Formik>

@@ -3,6 +3,10 @@ This file is a running track of new features and fixes to each version of the pa
 
 This project follows [Semantic Versioning](http://semver.org) guidelines.
 
+## v1.0.15
+### Changed
+* Increased the login page spacing between the password reset link and the language selector using an explicit wrapper block so the controls no longer visually touch.
+
 ## v1.0.14
 ### Added
 * Added configurable captcha provider support so the Panel can use either Google reCAPTCHA or Cloudflare Turnstile on authentication routes.
