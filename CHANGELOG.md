@@ -3,6 +3,11 @@ This file is a running track of new features and fixes to each version of the pa
 
 This project follows [Semantic Versioning](http://semver.org) guidelines.
 
+## v1.0.18
+### Fixed
+* Applied captcha protection to the password reset submission flow so login, forgot password, and password reset all enforce the configured captcha provider server-side.
+* Added the matching reCAPTCHA and Cloudflare Turnstile widgets to the password reset page to keep the frontend flow aligned with backend validation.
+
 ## v1.0.17
 ### Fixed
 * Prevented the visible Turnstile widget from re-initializing on every auth form render, which could leave it stuck verifying instead of completing successfully.

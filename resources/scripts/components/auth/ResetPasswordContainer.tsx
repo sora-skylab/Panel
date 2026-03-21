@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { RouteComponentProps } from 'react-router';
 import { Link } from 'react-router-dom';
 import performPasswordReset from '@/api/auth/performPasswordReset';
 import { httpErrorToHuman } from '@/api/http';
 import LoginFormContainer from '@/components/auth/LoginFormContainer';
-import { Actions, useStoreActions } from 'easy-peasy';
+import { Actions, useStoreActions, useStoreState } from 'easy-peasy';
 import { ApplicationStore } from '@/state';
 import { Formik, FormikHelpers } from 'formik';
 import { object, ref, string } from 'yup';
@@ -12,6 +12,8 @@ import Field from '@/components/elements/Field';
 import Input from '@/components/elements/Input';
 import tw from 'twin.macro';
 import Button from '@/components/elements/Button';
+import Reaptcha from 'reaptcha';
+import Turnstile, { TurnstileHandle } from '@/components/elements/turnstile/Turnstile';
 import { t } from '@/lib/locale';
 
 interface Values {
@@ -20,18 +22,58 @@ interface Values {
 }
 
 export default ({ match, location }: RouteComponentProps<{ token: string }>) => {
+    const recaptchaRef = useRef<Reaptcha>(null);
+    const turnstileRef = useRef<TurnstileHandle>(null);
     const [email, setEmail] = useState('');
+    const [token, setToken] = useState('');
 
     const { clearFlashes, addFlash } = useStoreActions((actions: Actions<ApplicationStore>) => actions.flashes);
+    const { enabled: captchaEnabled, provider: captchaProvider, siteKey } = useStoreState(
+        (state) => state.settings.data!.recaptcha
+    );
 
     const parsed = new URLSearchParams(location.search);
     if (email.length === 0 && parsed.get('email')) {
         setEmail(parsed.get('email') || '');
     }
 
+    useEffect(() => {
+        clearFlashes();
+    }, []);
+
     const submit = ({ password, passwordConfirmation }: Values, { setSubmitting }: FormikHelpers<Values>) => {
         clearFlashes();
-        performPasswordReset(email, { token: match.params.token, password, passwordConfirmation })
+
+        if (captchaEnabled && !token) {
+            if (captchaProvider === 'turnstile') {
+                setSubmitting(false);
+                addFlash({ type: 'error', title: t('ui.common.error'), message: t('strings.captcha_invalid', { ns: 'strings' }) });
+
+                return;
+            }
+
+            try {
+                recaptchaRef.current!.execute().catch((error) => {
+                    console.error(error);
+
+                    setSubmitting(false);
+                    addFlash({ type: 'error', title: t('ui.common.error'), message: httpErrorToHuman(error) });
+                });
+            } catch (error) {
+                console.error(error);
+
+                setSubmitting(false);
+                addFlash({
+                    type: 'error',
+                    title: t('ui.common.error'),
+                    message: httpErrorToHuman(error instanceof Error ? error : new Error(String(error))),
+                });
+            }
+
+            return;
+        }
+
+        performPasswordReset(email, { token: match.params.token, password, passwordConfirmation }, captchaProvider, token)
             .then(() => {
                 // @ts-expect-error this is valid
                 window.location = '/';
@@ -41,6 +83,14 @@ export default ({ match, location }: RouteComponentProps<{ token: string }>) => 
 
                 setSubmitting(false);
                 addFlash({ type: 'error', title: t('ui.common.error'), message: httpErrorToHuman(error) });
+            })
+            .then(() => {
+                setToken('');
+                if (captchaProvider === 'turnstile') {
+                    turnstileRef.current?.reset();
+                } else if (recaptchaRef.current) {
+                    recaptchaRef.current.reset();
+                }
             });
     };
 
@@ -61,7 +111,7 @@ export default ({ match, location }: RouteComponentProps<{ token: string }>) => 
                     .oneOf([ref('password'), null], t('ui.auth.validation.new_password_mismatch')),
             })}
         >
-            {({ isSubmitting }) => (
+            {({ isSubmitting, setSubmitting, submitForm }) => (
                 <LoginFormContainer title={t('ui.auth.reset_password')} css={tw`w-full flex`}>
                     <div>
                         <label>{t('ui.auth.email')}</label>
@@ -89,6 +139,41 @@ export default ({ match, location }: RouteComponentProps<{ token: string }>) => 
                             {t('ui.auth.reset_password_button')}
                         </Button>
                     </div>
+                    {captchaEnabled && captchaProvider === 'recaptcha' && (
+                        <Reaptcha
+                            ref={recaptchaRef}
+                            size={'invisible'}
+                            sitekey={siteKey || '_invalid_key'}
+                            onVerify={(response) => {
+                                setToken(response);
+                                submitForm();
+                            }}
+                            onExpire={() => {
+                                setSubmitting(false);
+                                setToken('');
+                            }}
+                        />
+                    )}
+                    {captchaEnabled && captchaProvider === 'turnstile' && (
+                        <div css={tw`mt-5`}>
+                            <Turnstile
+                                ref={turnstileRef}
+                                siteKey={siteKey || '_invalid_key'}
+                                onVerify={(response) => {
+                                    setToken(response);
+                                }}
+                                onExpire={() => {
+                                    setSubmitting(false);
+                                    setToken('');
+                                }}
+                                onError={(error) => {
+                                    console.error(error);
+                                    setSubmitting(false);
+                                    addFlash({ type: 'error', title: t('ui.common.error'), message: httpErrorToHuman(error) });
+                                }}
+                            />
+                        </div>
+                    )}
                     <div css={tw`mt-6 text-center`}>
                         <Link
                             to={'/auth/login'}
