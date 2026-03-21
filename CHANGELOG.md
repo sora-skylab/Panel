@@ -3,6 +3,11 @@ This file is a running track of new features and fixes to each version of the pa
 
 This project follows [Semantic Versioning](http://semver.org) guidelines.
 
+## v1.0.5
+### Fixed
+* Fixed stale version cache data causing the admin dashboard to continue showing upstream `1.12.1` as the latest panel release after upgrading to the fork.
+* Added validation for cached version metadata so outdated cache payloads are refreshed against this fork's GitHub release URLs.
+
 ## v1.0.4
 ### Fixed
 * The admin dashboard version widget now compares against this fork's GitHub releases instead of upstream Pterodactyl releases.

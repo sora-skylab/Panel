@@ -9,7 +9,7 @@ use Illuminate\Contracts\Cache\Repository as CacheRepository;
 
 class SoftwareVersionService
 {
-    public const VERSION_CACHE_KEY = 'pterodactyl:versioning_data';
+    public const VERSION_CACHE_KEY = 'pterodactyl:versioning_data:v2';
 
     private static array $result;
 
@@ -104,30 +104,55 @@ class SoftwareVersionService
      */
     protected function cacheVersionData(): array
     {
-        return $this->cache->remember(self::VERSION_CACHE_KEY, CarbonImmutable::now()->addMinutes(config('pterodactyl.versioning.cache_time', 60)), function () {
-            try {
-                $panelRelease = $this->requestReleaseData(config('pterodactyl.versioning.panel.latest_url'));
-                $wingsRelease = $this->requestReleaseData(config('pterodactyl.versioning.wings.latest_url'));
+        $cached = $this->cache->get(self::VERSION_CACHE_KEY);
 
-                return [
-                    'panel' => $this->normalizeReleaseVersion(Arr::get($panelRelease, 'tag_name')) ?? config('app.version', 'error'),
-                    'wings' => $this->normalizeReleaseVersion(Arr::get($wingsRelease, 'tag_name')) ?? 'error',
-                    'panel_release_url' => Arr::get($panelRelease, 'html_url', config('pterodactyl.versioning.panel.releases_url')),
-                    'panel_repository_url' => config('pterodactyl.versioning.panel.repository_url'),
-                    'discord' => config('pterodactyl.versioning.support.discord_url'),
-                    'donations' => config('pterodactyl.versioning.support.donations_url'),
-                ];
-            } catch (\Exception) {
-                return [
-                    'panel' => config('app.version', 'error'),
-                    'wings' => 'error',
-                    'panel_release_url' => config('pterodactyl.versioning.panel.releases_url'),
-                    'panel_repository_url' => config('pterodactyl.versioning.panel.repository_url'),
-                    'discord' => config('pterodactyl.versioning.support.discord_url'),
-                    'donations' => config('pterodactyl.versioning.support.donations_url'),
-                ];
-            }
-        });
+        if ($this->isVersionDataValid($cached)) {
+            return $cached;
+        }
+
+        $data = $this->fetchVersionData();
+        $ttl = CarbonImmutable::now()->addMinutes(config('pterodactyl.versioning.cache_time', 60));
+
+        $this->cache->put(self::VERSION_CACHE_KEY, $data, $ttl);
+
+        return $data;
+    }
+
+    protected function fetchVersionData(): array
+    {
+        try {
+            $panelRelease = $this->requestReleaseData(config('pterodactyl.versioning.panel.latest_url'));
+            $wingsRelease = $this->requestReleaseData(config('pterodactyl.versioning.wings.latest_url'));
+
+            return [
+                'panel' => $this->normalizeReleaseVersion(Arr::get($panelRelease, 'tag_name')) ?? config('app.version', 'error'),
+                'wings' => $this->normalizeReleaseVersion(Arr::get($wingsRelease, 'tag_name')) ?? 'error',
+                'panel_release_url' => Arr::get($panelRelease, 'html_url', config('pterodactyl.versioning.panel.releases_url')),
+                'panel_repository_url' => config('pterodactyl.versioning.panel.repository_url'),
+                'discord' => config('pterodactyl.versioning.support.discord_url'),
+                'donations' => config('pterodactyl.versioning.support.donations_url'),
+            ];
+        } catch (\Exception) {
+            return [
+                'panel' => config('app.version', 'error'),
+                'wings' => 'error',
+                'panel_release_url' => config('pterodactyl.versioning.panel.releases_url'),
+                'panel_repository_url' => config('pterodactyl.versioning.panel.repository_url'),
+                'discord' => config('pterodactyl.versioning.support.discord_url'),
+                'donations' => config('pterodactyl.versioning.support.donations_url'),
+            ];
+        }
+    }
+
+    protected function isVersionDataValid(mixed $data): bool
+    {
+        if (!is_array($data)) {
+            return false;
+        }
+
+        return filled(Arr::get($data, 'panel'))
+            && filled(Arr::get($data, 'panel_release_url'))
+            && Arr::get($data, 'panel_repository_url') === config('pterodactyl.versioning.panel.repository_url');
     }
 
     protected function requestReleaseData(?string $url): array
