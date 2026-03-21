@@ -3,6 +3,10 @@ This file is a running track of new features and fixes to each version of the pa
 
 This project follows [Semantic Versioning](http://semver.org) guidelines.
 
+## v1.0.9
+### Changed
+* Removed the login-page language switcher to keep the authentication screen cleaner while leaving account-page language changes intact.
+
 ## v1.0.8
 ### Changed
 * Refined the login-page language switcher to use a compact pill-style selector that better matches the authentication card UI.
