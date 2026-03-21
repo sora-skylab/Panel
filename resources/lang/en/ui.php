@@ -98,6 +98,7 @@ return [
         'confirm_new_password' => 'Confirm New Password',
         'reset_password_button' => 'Reset Password',
         'login_button' => 'Login',
+        'language_label' => 'Language',
         'validation' => [
             'valid_email_required' => 'A valid email address must be provided to continue.',
             'username_or_email_required' => 'A username or email must be provided.',
@@ -119,6 +120,8 @@ return [
         'two_factor_required_message' => 'Your account must have two-factor authentication enabled in order to continue.',
         'update_password' => 'Update Password',
         'update_email_address' => 'Update Email Address',
+        'language_preferences' => 'Language Preferences',
+        'language_preferences_description' => 'Choose the language used when rendering the Panel for your account.',
         'two_step_verification' => 'Two-Step Verification',
         'account_api' => 'Account API',
         'create_api_key' => 'Create API Key',

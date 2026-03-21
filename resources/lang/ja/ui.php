@@ -98,6 +98,7 @@ return [
         'confirm_new_password' => '新しいパスワードを確認',
         'reset_password_button' => 'パスワードをリセット',
         'login_button' => 'ログイン',
+        'language_label' => '言語',
         'validation' => [
             'valid_email_required' => '続行するには有効なメールアドレスを入力してください。',
             'username_or_email_required' => 'ユーザー名またはメールアドレスを入力してください。',
@@ -119,6 +120,8 @@ return [
         'two_factor_required_message' => '続行するには、このアカウントで 2 段階認証を有効にする必要があります。',
         'update_password' => 'パスワードを更新',
         'update_email_address' => 'メールアドレスを更新',
+        'language_preferences' => '言語設定',
+        'language_preferences_description' => 'このアカウントで Panel を表示するときに使用する言語を選択してください。',
         'two_step_verification' => '2 段階認証',
         'account_api' => 'アカウント API',
         'create_api_key' => 'API キーを作成',

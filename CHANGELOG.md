@@ -3,6 +3,14 @@ This file is a running track of new features and fixes to each version of the pa
 
 This project follows [Semantic Versioning](http://semver.org) guidelines.
 
+## v1.0.6
+### Added
+* Added a guest locale preference switcher on the authentication screens so the login, password reset, and checkpoint pages can be switched without administrator access.
+* Added an account language preference form for regular users so they can change their own Panel language from the account overview screen.
+
+### Changed
+* The web locale middleware now respects a locale preference cookie for unauthenticated requests and Asset bootstrap data now exposes the active locale plus the list of available languages to the frontend.
+
 ## v1.0.5
 ### Fixed
 * Fixed stale version cache data causing the admin dashboard to continue showing upstream `1.12.1` as the latest panel release after upgrading to the fork.
