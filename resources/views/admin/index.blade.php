@@ -24,6 +24,44 @@
         && \Illuminate\Support\Facades\Route::has('admin.panel-updates.store');
     $statusEndpoint = $updaterRoutesAvailable ? route('admin.panel-updates.status') : url('/admin/panel-updates/status');
     $startEndpoint = $updaterRoutesAvailable ? route('admin.panel-updates.store') : url('/admin/panel-updates');
+    $updaterTranslations = [
+        'status_labels' => [
+            'idle' => trans('admin/update.status.idle'),
+            'starting' => trans('admin/update.status.starting'),
+            'running' => trans('admin/update.status.running'),
+            'completed' => trans('admin/update.status.completed'),
+            'failed' => trans('admin/update.status.failed'),
+        ],
+        'status_descriptions' => [
+            'idle' => trans('admin/update.status_description.idle'),
+            'starting' => trans('admin/update.status_description.starting'),
+            'running' => trans('admin/update.status_description.running'),
+            'completed' => trans('admin/update.status_description.completed'),
+            'failed' => trans('admin/update.status_description.failed'),
+        ],
+        'system_up_to_date' => trans('admin/update.system.up_to_date'),
+        'system_update_available' => trans('admin/update.system.update_available'),
+        'system_status_text_latest' => trans('admin/update.system.status_text_latest'),
+        'system_status_text_update' => trans('admin/update.system.status_text_update'),
+        'start_confirm_title' => trans('admin/update.automatic.start_confirm_title'),
+        'start_confirm_text' => trans('admin/update.automatic.start_confirm_text'),
+        'start_confirm_button' => trans('admin/update.automatic.start_confirm_button'),
+        'start_success_title' => trans('admin/update.automatic.start_success_title'),
+        'start_success_text' => trans('admin/update.automatic.start_success_text'),
+        'refresh_error_title' => trans('admin/update.automatic.refresh_error_title'),
+        'refresh_error_text' => trans('admin/update.automatic.refresh_error_text'),
+        'start_error_title' => trans('admin/update.automatic.start_error_title'),
+        'generic_error' => trans('admin/update.automatic.generic_error'),
+        'panel_unavailable' => trans('admin/update.automatic.panel_unavailable'),
+        'log_empty' => trans('admin/update.automatic.log_empty'),
+        'unsupported_platform' => trans('admin/update.automatic.unsupported_platform'),
+        'no_update_available' => trans('admin/update.automatic.no_update_available'),
+        'skip_chown_note' => trans('admin/update.automatic.skip_chown_note'),
+        'ready_note' => trans('admin/update.automatic.ready_note'),
+        'route_cache_note' => trans('admin/update.automatic.route_cache_note'),
+        'ownership_repair_skipped' => trans('admin/update.automatic.ownership_repair_skipped'),
+        'ownership_repair_enabled' => trans('admin/update.automatic.ownership_repair_enabled', ['user' => ':user', 'group' => ':group']),
+    ];
 @endphp
 
 @section('title')
@@ -210,44 +248,7 @@
                 failed: 'box-danger',
             };
 
-            var translations = @json([
-                'status_labels' => [
-                    'idle' => trans('admin/update.status.idle'),
-                    'starting' => trans('admin/update.status.starting'),
-                    'running' => trans('admin/update.status.running'),
-                    'completed' => trans('admin/update.status.completed'),
-                    'failed' => trans('admin/update.status.failed'),
-                ],
-                'status_descriptions' => [
-                    'idle' => trans('admin/update.status_description.idle'),
-                    'starting' => trans('admin/update.status_description.starting'),
-                    'running' => trans('admin/update.status_description.running'),
-                    'completed' => trans('admin/update.status_description.completed'),
-                    'failed' => trans('admin/update.status_description.failed'),
-                ],
-                'system_up_to_date' => trans('admin/update.system.up_to_date'),
-                'system_update_available' => trans('admin/update.system.update_available'),
-                'system_status_text_latest' => trans('admin/update.system.status_text_latest'),
-                'system_status_text_update' => trans('admin/update.system.status_text_update'),
-                'start_confirm_title' => trans('admin/update.automatic.start_confirm_title'),
-                'start_confirm_text' => trans('admin/update.automatic.start_confirm_text'),
-                'start_confirm_button' => trans('admin/update.automatic.start_confirm_button'),
-                'start_success_title' => trans('admin/update.automatic.start_success_title'),
-                'start_success_text' => trans('admin/update.automatic.start_success_text'),
-                'refresh_error_title' => trans('admin/update.automatic.refresh_error_title'),
-                'refresh_error_text' => trans('admin/update.automatic.refresh_error_text'),
-                'start_error_title' => trans('admin/update.automatic.start_error_title'),
-                'generic_error' => trans('admin/update.automatic.generic_error'),
-                'panel_unavailable' => trans('admin/update.automatic.panel_unavailable'),
-                'log_empty' => trans('admin/update.automatic.log_empty'),
-                'unsupported_platform' => trans('admin/update.automatic.unsupported_platform'),
-                'no_update_available' => trans('admin/update.automatic.no_update_available'),
-                'skip_chown_note' => trans('admin/update.automatic.skip_chown_note'),
-                'ready_note' => trans('admin/update.automatic.ready_note'),
-                'route_cache_note' => trans('admin/update.automatic.route_cache_note'),
-                'ownership_repair_skipped' => trans('admin/update.automatic.ownership_repair_skipped'),
-                'ownership_repair_enabled' => trans('admin/update.automatic.ownership_repair_enabled', ['user' => ':user', 'group' => ':group']),
-            ]);
+            var translations = @json($updaterTranslations);
 
             function format(template, replacements) {
                 var output = template;

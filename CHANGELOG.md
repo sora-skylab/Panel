@@ -3,6 +3,10 @@ This file is a running track of new features and fixes to each version of the pa
 
 This project follows [Semantic Versioning](http://semver.org) guidelines.
 
+## v1.0.25
+### Fixed
+* Fixed the admin overview Blade template so the automatic updater widget no longer triggers a 500 error from an `Unclosed '['` parse failure while rendering `/admin`.
+
 ## v1.0.24
 ### Fixed
 * Prevented the admin overview from throwing a 500 error on installations with stale route caches by avoiding hard failure on the new updater route names and disabling the updater controls until routes are refreshed.
