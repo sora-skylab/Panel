@@ -48,7 +48,7 @@ class LanguageMiddleware
 
     protected function resolveLocale(Request $request, ?string $requestedLocale = null): string
     {
-        $default = config('app.panel_locale', config('app.locale', 'en'));
+        $default = config('app.panel_locale', config('app.locale', 'ja'));
         $available = array_keys($this->getAvailableLanguages());
 
         foreach ([$requestedLocale, $request->user()?->language, $request->cookie(self::COOKIE_NAME), $default] as $locale) {

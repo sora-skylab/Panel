@@ -25,7 +25,7 @@ class AssetComposer
      */
     public function compose(View $view): void
     {
-        $currentLocale = app()->getLocale() ?: config('app.panel_locale', config('app.locale', 'en'));
+        $currentLocale = app()->getLocale() ?: config('app.panel_locale', config('app.locale', 'ja'));
         $fallbackLocale = config('app.fallback_locale', 'en');
 
         $view->with('asset', $this->assetHashService);

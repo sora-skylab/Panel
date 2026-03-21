@@ -47,7 +47,7 @@ class IndexController extends Controller
      */
     public function update(BaseSettingsFormRequest $request): RedirectResponse
     {
-        $previousLocale = config('app.panel_locale', config('app.locale', 'en'));
+        $previousLocale = config('app.panel_locale', config('app.locale', 'ja'));
         $newLocale = $request->input('app:locale');
 
         foreach ($request->normalize() as $key => $value) {

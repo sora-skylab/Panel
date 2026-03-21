@@ -3,6 +3,13 @@ This file is a running track of new features and fixes to each version of the pa
 
 This project follows [Semantic Versioning](http://semver.org) guidelines.
 
+## v1.0.12
+### Changed
+* Changed the Panel's default locale baseline to Japanese for fresh installs, new users, and frontend locale fallbacks.
+
+### Fixed
+* Added an upgrade migration that switches the persisted panel default language from English to Japanese, and keeps users still following the upstream English default in sync with the new Japanese baseline.
+
 ## v1.0.11
 ### Changed
 * Increased the spacing between the login page "Forgot password?" link and the locale switcher for a cleaner authentication layout.
