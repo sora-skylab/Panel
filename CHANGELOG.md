@@ -3,6 +3,10 @@ This file is a running track of new features and fixes to each version of the pa
 
 This project follows [Semantic Versioning](http://semver.org) guidelines.
 
+## v1.0.8
+### Changed
+* Refined the login-page language switcher to use a compact pill-style selector that better matches the authentication card UI.
+
 ## v1.0.7
 ### Fixed
 * Removed the locale switchers' dependency on newly added POST and client API routes so language changes now work on installations that have not rebuilt their route cache.
