@@ -24,6 +24,25 @@ class SoftwareVersionService
         self::$result = $this->cacheVersionData();
     }
 
+    public function refresh(bool $force = false): array
+    {
+        if (!$force) {
+            return self::$result;
+        }
+
+        $data = $this->fetchVersionData();
+        $ttl = CarbonImmutable::now()->addMinutes(
+            Arr::get($data, 'fetched', false)
+                ? config('pterodactyl.versioning.cache_time', 60)
+                : min(config('pterodactyl.versioning.cache_time', 60), self::FAILURE_CACHE_MINUTES),
+        );
+
+        $this->cache->put(self::VERSION_CACHE_KEY, $data, $ttl);
+        self::$result = $data;
+
+        return self::$result;
+    }
+
     /**
      * Get the latest version of the panel from the CDN servers.
      */
@@ -111,16 +130,7 @@ class SoftwareVersionService
             return $cached;
         }
 
-        $data = $this->fetchVersionData();
-        $ttl = CarbonImmutable::now()->addMinutes(
-            Arr::get($data, 'fetched', false)
-                ? config('pterodactyl.versioning.cache_time', 60)
-                : min(config('pterodactyl.versioning.cache_time', 60), self::FAILURE_CACHE_MINUTES),
-        );
-
-        $this->cache->put(self::VERSION_CACHE_KEY, $data, $ttl);
-
-        return $data;
+        return $this->refresh(true);
     }
 
     protected function fetchVersionData(): array

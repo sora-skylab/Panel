@@ -24,6 +24,8 @@ class BaseController extends Controller
      */
     public function index(): View
     {
+        $this->version->refresh(true);
+
         return view('admin.index', [
             'version' => $this->version,
             'updater' => $this->panelUpdateService->getOverview(),

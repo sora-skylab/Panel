@@ -3,6 +3,10 @@ This file is a running track of new features and fixes to each version of the pa
 
 This project follows [Semantic Versioning](http://semver.org) guidelines.
 
+## v1.0.28
+### Changed
+* Changed the admin overview page to refresh the latest release information from GitHub on every full page load, so a manual reload immediately reflects newly published Panel releases.
+
 ## v1.0.27
 ### Fixed
 * Forced the release-version cache to refresh whenever the installed Panel version changes, fixing the case where the admin updater kept showing an older GitHub release after a successful Panel upgrade.
