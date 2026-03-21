@@ -27,6 +27,7 @@ class AssetComposer
     {
         $currentLocale = app()->getLocale() ?: config('app.panel_locale', config('app.locale', 'ja'));
         $fallbackLocale = config('app.fallback_locale', 'en');
+        $captchaProvider = config('recaptcha.provider', 'none');
 
         $view->with('asset', $this->assetHashService);
         $view->with('localeData', $this->translations->loadLocales([$currentLocale, $fallbackLocale]));
@@ -35,8 +36,13 @@ class AssetComposer
             'locale' => $currentLocale,
             'availableLanguages' => $this->getAvailableLanguages(true),
             'recaptcha' => [
-                'enabled' => config('recaptcha.enabled', false),
-                'siteKey' => config('recaptcha.website_key') ?? '',
+                'enabled' => $captchaProvider !== 'none',
+                'provider' => $captchaProvider,
+                'siteKey' => match ($captchaProvider) {
+                    'turnstile' => config('recaptcha.turnstile_website_key') ?? '',
+                    'recaptcha' => config('recaptcha.website_key') ?? '',
+                    default => '',
+                },
             ],
         ]);
     }

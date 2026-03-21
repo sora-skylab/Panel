@@ -19,9 +19,12 @@ class SettingsServiceProvider extends ServiceProvider
     protected array $keys = [
         'app:name',
         'app:locale',
+        'recaptcha:provider',
         'recaptcha:enabled',
         'recaptcha:secret_key',
         'recaptcha:website_key',
+        'recaptcha:turnstile_secret_key',
+        'recaptcha:turnstile_website_key',
         'pterodactyl:guzzle:timeout',
         'pterodactyl:guzzle:connect_timeout',
         'pterodactyl:console:count',
@@ -104,6 +107,14 @@ class SettingsServiceProvider extends ServiceProvider
 
             $config->set(str_replace(':', '.', $key), $value);
         }
+
+        $provider = $config->get('recaptcha.provider');
+        if (!in_array($provider, ['none', 'recaptcha', 'turnstile'], true)) {
+            $provider = filter_var($config->get('recaptcha.enabled', true), FILTER_VALIDATE_BOOLEAN) ? 'recaptcha' : 'none';
+        }
+
+        $config->set('recaptcha.provider', $provider);
+        $config->set('recaptcha.enabled', $provider !== 'none');
 
         // Preserve the configured panel default locale so request-specific locale changes
         // do not overwrite the persisted setting value used by the admin UI and frontend bootstrapping.

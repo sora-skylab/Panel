@@ -11,6 +11,7 @@ import { object, string } from 'yup';
 import tw from 'twin.macro';
 import Button from '@/components/elements/Button';
 import Reaptcha from 'reaptcha';
+import Turnstile, { TurnstileHandle } from '@/components/elements/turnstile/Turnstile';
 import useFlash from '@/plugins/useFlash';
 import { t } from '@/lib/locale';
 
@@ -19,11 +20,14 @@ interface Values {
 }
 
 export default () => {
-    const ref = useRef<Reaptcha>(null);
+    const recaptchaRef = useRef<Reaptcha>(null);
+    const turnstileRef = useRef<TurnstileHandle>(null);
     const [token, setToken] = useState('');
 
     const { clearFlashes, addFlash } = useFlash();
-    const { enabled: recaptchaEnabled, siteKey } = useStoreState((state) => state.settings.data!.recaptcha);
+    const { enabled: captchaEnabled, provider: captchaProvider, siteKey } = useStoreState(
+        (state) => state.settings.data!.recaptcha
+    );
 
     useEffect(() => {
         clearFlashes();
@@ -33,19 +37,34 @@ export default () => {
         clearFlashes();
 
         // If there is no token in the state yet, request the token and then abort this submit request
-        // since it will be re-submitted when the recaptcha data is returned by the component.
-        if (recaptchaEnabled && !token) {
-            ref.current!.execute().catch((error) => {
+        // since it will be re-submitted when the captcha data is returned by the component.
+        if (captchaEnabled && !token) {
+            try {
+                if (captchaProvider === 'turnstile') {
+                    turnstileRef.current!.execute();
+                } else {
+                    recaptchaRef.current!.execute().catch((error) => {
+                        console.error(error);
+
+                        setSubmitting(false);
+                        addFlash({ type: 'error', title: t('ui.common.error'), message: httpErrorToHuman(error) });
+                    });
+                }
+            } catch (error) {
                 console.error(error);
 
                 setSubmitting(false);
-                addFlash({ type: 'error', title: t('ui.common.error'), message: httpErrorToHuman(error) });
-            });
+                addFlash({
+                    type: 'error',
+                    title: t('ui.common.error'),
+                    message: httpErrorToHuman(error instanceof Error ? error : new Error(String(error))),
+                });
+            }
 
             return;
         }
 
-        requestPasswordResetEmail(email, token)
+        requestPasswordResetEmail(email, captchaProvider, token)
             .then((response) => {
                 resetForm();
                 addFlash({ type: 'success', title: t('ui.common.success'), message: response });
@@ -56,7 +75,11 @@ export default () => {
             })
             .then(() => {
                 setToken('');
-                if (ref.current) ref.current.reset();
+                if (captchaProvider === 'turnstile') {
+                    turnstileRef.current?.reset();
+                } else if (recaptchaRef.current) {
+                    recaptchaRef.current.reset();
+                }
 
                 setSubmitting(false);
             });
@@ -86,9 +109,9 @@ export default () => {
                             {t('ui.auth.send_email')}
                         </Button>
                     </div>
-                    {recaptchaEnabled && (
+                    {captchaEnabled && captchaProvider === 'recaptcha' && (
                         <Reaptcha
-                            ref={ref}
+                            ref={recaptchaRef}
                             size={'invisible'}
                             sitekey={siteKey || '_invalid_key'}
                             onVerify={(response) => {
@@ -98,6 +121,25 @@ export default () => {
                             onExpire={() => {
                                 setSubmitting(false);
                                 setToken('');
+                            }}
+                        />
+                    )}
+                    {captchaEnabled && captchaProvider === 'turnstile' && (
+                        <Turnstile
+                            ref={turnstileRef}
+                            siteKey={siteKey || '_invalid_key'}
+                            onVerify={(response) => {
+                                setToken(response);
+                                submitForm();
+                            }}
+                            onExpire={() => {
+                                setSubmitting(false);
+                                setToken('');
+                            }}
+                            onError={(error) => {
+                                console.error(error);
+                                setSubmitting(false);
+                                addFlash({ type: 'error', title: t('ui.common.error'), message: httpErrorToHuman(error) });
                             }}
                         />
                     )}

@@ -1,4 +1,5 @@
 import { action, Action } from 'easy-peasy';
+import { CaptchaProvider } from '@/types/captcha';
 
 export interface SiteSettings {
     name: string;
@@ -6,6 +7,7 @@ export interface SiteSettings {
     availableLanguages: Record<string, string>;
     recaptcha: {
         enabled: boolean;
+        provider: CaptchaProvider;
         siteKey: string;
     };
 }

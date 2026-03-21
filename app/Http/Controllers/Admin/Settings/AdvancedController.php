@@ -31,8 +31,11 @@ class AdvancedController extends Controller
     {
         $showRecaptchaWarning = false;
         if (
-            $this->config->get('recaptcha._shipped_secret_key') === $this->config->get('recaptcha.secret_key')
-            || $this->config->get('recaptcha._shipped_website_key') === $this->config->get('recaptcha.website_key')
+            $this->config->get('recaptcha.provider') === 'recaptcha' &&
+            (
+                $this->config->get('recaptcha._shipped_secret_key') === $this->config->get('recaptcha.secret_key')
+                || $this->config->get('recaptcha._shipped_website_key') === $this->config->get('recaptcha.website_key')
+            )
         ) {
             $showRecaptchaWarning = true;
         }
@@ -53,7 +56,7 @@ class AdvancedController extends Controller
         }
 
         $this->kernel->call('queue:restart');
-        $this->alert->success('Advanced settings have been updated successfully and the queue worker was restarted to apply these changes.')->flash();
+        $this->alert->success(trans('admin/settings.notices.advanced_settings_updated'))->flash();
 
         return redirect()->route('admin.settings.advanced');
     }

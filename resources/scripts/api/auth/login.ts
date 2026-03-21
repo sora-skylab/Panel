@@ -1,4 +1,6 @@
 import http from '@/api/http';
+import getCaptchaPayload from '@/api/auth/getCaptchaPayload';
+import { CaptchaProvider } from '@/types/captcha';
 
 export interface LoginResponse {
     complete: boolean;
@@ -9,17 +11,18 @@ export interface LoginResponse {
 export interface LoginData {
     username: string;
     password: string;
-    recaptchaData?: string | null;
+    captchaProvider: CaptchaProvider;
+    captchaData?: string | null;
 }
 
-export default ({ username, password, recaptchaData }: LoginData): Promise<LoginResponse> => {
+export default ({ username, password, captchaProvider, captchaData }: LoginData): Promise<LoginResponse> => {
     return new Promise((resolve, reject) => {
         http.get('/sanctum/csrf-cookie')
             .then(() =>
                 http.post('/auth/login', {
                     user: username,
                     password,
-                    'g-recaptcha-response': recaptchaData,
+                    ...getCaptchaPayload(captchaProvider, captchaData),
                 })
             )
             .then((response) => {

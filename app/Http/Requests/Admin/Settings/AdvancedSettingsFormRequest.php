@@ -2,6 +2,7 @@
 
 namespace Pterodactyl\Http\Requests\Admin\Settings;
 
+use Illuminate\Validation\Rule;
 use Pterodactyl\Http\Requests\Admin\AdminFormRequest;
 
 class AdvancedSettingsFormRequest extends AdminFormRequest
@@ -12,9 +13,11 @@ class AdvancedSettingsFormRequest extends AdminFormRequest
     public function rules(): array
     {
         return [
-            'recaptcha:enabled' => 'required|in:true,false',
-            'recaptcha:secret_key' => 'required|string|max:191',
-            'recaptcha:website_key' => 'required|string|max:191',
+            'recaptcha:provider' => ['required', Rule::in(['none', 'recaptcha', 'turnstile'])],
+            'recaptcha:secret_key' => 'nullable|required_if:recaptcha:provider,recaptcha|string|max:191',
+            'recaptcha:website_key' => 'nullable|required_if:recaptcha:provider,recaptcha|string|max:191',
+            'recaptcha:turnstile_secret_key' => 'nullable|required_if:recaptcha:provider,turnstile|string|max:191',
+            'recaptcha:turnstile_website_key' => 'nullable|required_if:recaptcha:provider,turnstile|string|max:191',
             'pterodactyl:guzzle:timeout' => 'required|integer|between:1,60',
             'pterodactyl:guzzle:connect_timeout' => 'required|integer|between:1,60',
             'pterodactyl:client_features:allocations:enabled' => 'required|in:true,false',
@@ -37,9 +40,11 @@ class AdvancedSettingsFormRequest extends AdminFormRequest
     public function attributes(): array
     {
         return [
-            'recaptcha:enabled' => 'reCAPTCHA Enabled',
+            'recaptcha:provider' => 'Captcha Provider',
             'recaptcha:secret_key' => 'reCAPTCHA Secret Key',
-            'recaptcha:website_key' => 'reCAPTCHA Website Key',
+            'recaptcha:website_key' => 'reCAPTCHA Site Key',
+            'recaptcha:turnstile_secret_key' => 'Cloudflare Turnstile Secret Key',
+            'recaptcha:turnstile_website_key' => 'Cloudflare Turnstile Site Key',
             'pterodactyl:guzzle:timeout' => 'HTTP Request Timeout',
             'pterodactyl:guzzle:connect_timeout' => 'HTTP Connection Timeout',
             'pterodactyl:client_features:allocations:enabled' => 'Auto Create Allocations Enabled',

@@ -9,6 +9,7 @@ import Field from '@/components/elements/Field';
 import tw from 'twin.macro';
 import Button from '@/components/elements/Button';
 import Reaptcha from 'reaptcha';
+import Turnstile, { TurnstileHandle } from '@/components/elements/turnstile/Turnstile';
 import useFlash from '@/plugins/useFlash';
 import { t } from '@/lib/locale';
 import LocaleSwitcher from '@/components/auth/LocaleSwitcher';
@@ -19,11 +20,14 @@ interface Values {
 }
 
 const LoginContainer = ({ history }: RouteComponentProps) => {
-    const ref = useRef<Reaptcha>(null);
+    const recaptchaRef = useRef<Reaptcha>(null);
+    const turnstileRef = useRef<TurnstileHandle>(null);
     const [token, setToken] = useState('');
 
     const { clearFlashes, clearAndAddHttpError } = useFlash();
-    const { enabled: recaptchaEnabled, siteKey } = useStoreState((state) => state.settings.data!.recaptcha);
+    const { enabled: captchaEnabled, provider: captchaProvider, siteKey } = useStoreState(
+        (state) => state.settings.data!.recaptcha
+    );
 
     useEffect(() => {
         clearFlashes();
@@ -33,19 +37,30 @@ const LoginContainer = ({ history }: RouteComponentProps) => {
         clearFlashes();
 
         // If there is no token in the state yet, request the token and then abort this submit request
-        // since it will be re-submitted when the recaptcha data is returned by the component.
-        if (recaptchaEnabled && !token) {
-            ref.current!.execute().catch((error) => {
+        // since it will be re-submitted when the captcha data is returned by the component.
+        if (captchaEnabled && !token) {
+            try {
+                if (captchaProvider === 'turnstile') {
+                    turnstileRef.current!.execute();
+                } else {
+                    recaptchaRef.current!.execute().catch((error) => {
+                        console.error(error);
+
+                        setSubmitting(false);
+                        clearAndAddHttpError({ error });
+                    });
+                }
+            } catch (error) {
                 console.error(error);
 
                 setSubmitting(false);
-                clearAndAddHttpError({ error });
-            });
+                clearAndAddHttpError({ error: error instanceof Error ? error : new Error(String(error)) });
+            }
 
             return;
         }
 
-        login({ ...values, recaptchaData: token })
+        login({ ...values, captchaProvider, captchaData: token })
             .then((response) => {
                 if (response.complete) {
                     // @ts-expect-error this is valid
@@ -59,7 +74,11 @@ const LoginContainer = ({ history }: RouteComponentProps) => {
                 console.error(error);
 
                 setToken('');
-                if (ref.current) ref.current.reset();
+                if (captchaProvider === 'turnstile') {
+                    turnstileRef.current?.reset();
+                } else if (recaptchaRef.current) {
+                    recaptchaRef.current.reset();
+                }
 
                 setSubmitting(false);
                 clearAndAddHttpError({ error });
@@ -98,9 +117,9 @@ const LoginContainer = ({ history }: RouteComponentProps) => {
                             {t('ui.auth.login_button')}
                         </Button>
                     </div>
-                    {recaptchaEnabled && (
+                    {captchaEnabled && captchaProvider === 'recaptcha' && (
                         <Reaptcha
-                            ref={ref}
+                            ref={recaptchaRef}
                             size={'invisible'}
                             sitekey={siteKey || '_invalid_key'}
                             onVerify={(response) => {
@@ -110,6 +129,25 @@ const LoginContainer = ({ history }: RouteComponentProps) => {
                             onExpire={() => {
                                 setSubmitting(false);
                                 setToken('');
+                            }}
+                        />
+                    )}
+                    {captchaEnabled && captchaProvider === 'turnstile' && (
+                        <Turnstile
+                            ref={turnstileRef}
+                            siteKey={siteKey || '_invalid_key'}
+                            onVerify={(response) => {
+                                setToken(response);
+                                submitForm();
+                            }}
+                            onExpire={() => {
+                                setSubmitting(false);
+                                setToken('');
+                            }}
+                            onError={(error) => {
+                                console.error(error);
+                                setSubmitting(false);
+                                clearAndAddHttpError({ error });
                             }}
                         />
                     )}
