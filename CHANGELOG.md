@@ -3,6 +3,10 @@ This file is a running track of new features and fixes to each version of the pa
 
 This project follows [Semantic Versioning](http://semver.org) guidelines.
 
+## v1.0.11
+### Changed
+* Increased the spacing between the login page "Forgot password?" link and the locale switcher for a cleaner authentication layout.
+
 ## v1.0.10
 ### Changed
 * Restored the login-page language switcher and removed the visible "Language" label so the selector remains available without extra heading text.

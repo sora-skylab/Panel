@@ -120,7 +120,7 @@ const LoginContainer = ({ history }: RouteComponentProps) => {
                         >
                             {t('ui.auth.forgot_password')}
                         </Link>
-                        <LocaleSwitcher css={tw`mt-4`} />
+                        <LocaleSwitcher css={tw`mt-6`} />
                     </div>
                 </LoginFormContainer>
             )}
