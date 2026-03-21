@@ -33,6 +33,7 @@ return [
         'start_button' => '自動更新を開始',
         'refresh_button' => '状態を再取得',
         'unsupported_platform' => '自動更新は Linux などの Unix 系ホストでのみ利用できます。',
+        'route_cache_note' => '現在の route cache には自動更新用ルートがまだ含まれていません。route cache をクリアするか、最新のアップグレード手順を一度実行すると updater を利用できます。',
         'no_update_available' => 'この Panel はすでに最新リリースです。',
         'skip_chown_note' => 'ファイル所有者の修復は自動でスキップされます。Panel のファイルを Web 実行ユーザーが書き込めない場合、更新は失敗する可能性があります。',
         'ready_note' => '更新の準備はできています。この fork の最新リリースを取得し、通常の Panel アップグレード手順を順番に実行します。',

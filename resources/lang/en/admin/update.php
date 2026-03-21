@@ -33,6 +33,7 @@ return [
         'start_button' => 'Start Automatic Update',
         'refresh_button' => 'Refresh Status',
         'unsupported_platform' => 'Automatic updates are only supported on Linux and other Unix-like hosts.',
+        'route_cache_note' => 'The automatic updater routes are not available in the current route cache yet. Clear the route cache or run the latest upgrade steps once to enable the updater controls.',
         'no_update_available' => 'This Panel is already running the latest available release.',
         'skip_chown_note' => 'File ownership repair will be skipped automatically. If your Panel files are not writable by the web user the update can still fail.',
         'ready_note' => 'The updater is ready. It will download the latest release for this fork and then run the normal Panel upgrade steps.',

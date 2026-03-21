@@ -20,6 +20,10 @@
     $initialStatus = $updater['status'] ?? 'idle';
     $initialStatusClass = $statusLabelClasses[$initialStatus] ?? 'label-default';
     $initialBoxClass = $statusBoxClasses[$initialStatus] ?? 'box-primary';
+    $updaterRoutesAvailable = \Illuminate\Support\Facades\Route::has('admin.panel-updates.status')
+        && \Illuminate\Support\Facades\Route::has('admin.panel-updates.store');
+    $statusEndpoint = $updaterRoutesAvailable ? route('admin.panel-updates.status') : url('/admin/panel-updates/status');
+    $startEndpoint = $updaterRoutesAvailable ? route('admin.panel-updates.store') : url('/admin/panel-updates');
 @endphp
 
 @section('title')
@@ -131,17 +135,19 @@
                         type="button"
                         class="btn btn-success"
                         id="start-panel-update"
-                        @if(!$updater['can_start']) disabled="disabled" @endif
+                        @if(!$updater['can_start'] || !$updaterRoutesAvailable) disabled="disabled" @endif
                     >
                         @lang('admin/update.automatic.start_button')
                     </button>
-                    <button type="button" class="btn btn-default" id="refresh-panel-update">
+                    <button type="button" class="btn btn-default" id="refresh-panel-update" @if(!$updaterRoutesAvailable) disabled="disabled" @endif>
                         @lang('admin/update.automatic.refresh_button')
                     </button>
                 </div>
 
                 <p class="small text-muted" id="panel-updater-action-note" style="margin-top: 12px; margin-bottom: 0;">
-                    @if (!$updater['supported'])
+                    @if (!$updaterRoutesAvailable)
+                        @lang('admin/update.automatic.route_cache_note')
+                    @elseif (!$updater['supported'])
                         @lang('admin/update.automatic.unsupported_platform')
                     @elseif (!$updater['update_available'])
                         @lang('admin/update.automatic.no_update_available')
@@ -181,8 +187,9 @@
     <script>
         (function () {
             var state = @json($updater);
-            var statusRoute = @json(route('admin.panel-updates.status'));
-            var startRoute = @json(route('admin.panel-updates.store'));
+            var updaterRoutesAvailable = @json($updaterRoutesAvailable);
+            var statusRoute = @json($statusEndpoint);
+            var startRoute = @json($startEndpoint);
             var releaseUrl = @json($version->getPanelReleaseUrl());
             var csrfToken = @json(csrf_token());
             var pollHandle = null;
@@ -237,6 +244,7 @@
                 'no_update_available' => trans('admin/update.automatic.no_update_available'),
                 'skip_chown_note' => trans('admin/update.automatic.skip_chown_note'),
                 'ready_note' => trans('admin/update.automatic.ready_note'),
+                'route_cache_note' => trans('admin/update.automatic.route_cache_note'),
                 'ownership_repair_skipped' => trans('admin/update.automatic.ownership_repair_skipped'),
                 'ownership_repair_enabled' => trans('admin/update.automatic.ownership_repair_enabled', ['user' => ':user', 'group' => ':group']),
             ]);
@@ -274,6 +282,10 @@
             }
 
             function getActionNote(data) {
+                if (!updaterRoutesAvailable) {
+                    return translations.route_cache_note;
+                }
+
                 if (!data.supported) {
                     return translations.unsupported_platform;
                 }
@@ -311,7 +323,8 @@
             }
 
             function updateActions(data) {
-                $('#start-panel-update').prop('disabled', !data.can_start);
+                $('#start-panel-update').prop('disabled', !updaterRoutesAvailable || !data.can_start);
+                $('#refresh-panel-update').prop('disabled', !updaterRoutesAvailable);
                 $('#panel-updater-action-note').text(getActionNote(data));
             }
 
