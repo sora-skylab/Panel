@@ -209,6 +209,172 @@
                     $('[data-toggle="tooltip"]').tooltip();
                 })
             </script>
+
+            @php($adminTranslationStrings = trans('admin-ui.strings'))
+            <script>
+                window.AdminI18n = (function () {
+                    const translations = @json(is_array($adminTranslationStrings) ? $adminTranslationStrings : []);
+                    const phraseKeys = Object.keys(translations).sort(function (a, b) {
+                        return b.length - a.length;
+                    });
+                    const htmlTranslations = phraseKeys.reduce(function (carry, key) {
+                        if (key.indexOf('<') === -1) {
+                            return carry;
+                        }
+
+                        carry[normalizeWhitespace(key)] = translations[key];
+
+                        return carry;
+                    }, {});
+                    const skippedTags = new Set(['CODE', 'PRE', 'SCRIPT', 'STYLE', 'TEXTAREA', 'NOSCRIPT']);
+                    const htmlSafeTags = new Set(['DIV', 'P', 'SMALL', 'SPAN', 'LABEL', 'LI', 'A', 'TD']);
+
+                    function normalizeWhitespace(value) {
+                        return value.replace(/\s+/g, ' ').trim();
+                    }
+
+                    function preserveWhitespace(original, translated) {
+                        const leading = original.match(/^\s*/)[0];
+                        const trailing = original.match(/\s*$/)[0];
+
+                        return leading + translated + trailing;
+                    }
+
+                    function translateText(value) {
+                        if (typeof value !== 'string' || value.length === 0) {
+                            return value;
+                        }
+
+                        const trimmed = value.trim();
+                        if (trimmed.length === 0) {
+                            return value;
+                        }
+
+                        if (Object.prototype.hasOwnProperty.call(translations, trimmed)) {
+                            return preserveWhitespace(value, translations[trimmed]);
+                        }
+
+                        let translated = trimmed;
+                        phraseKeys.forEach(function (key) {
+                            if (key === trimmed || key.length < 6) {
+                                return;
+                            }
+
+                            if (!/\s|[().:!?,'"-]/.test(key)) {
+                                return;
+                            }
+
+                            if (translated.includes(key)) {
+                                translated = translated.split(key).join(translations[key]);
+                            }
+                        });
+
+                        if (translated === trimmed) {
+                            return value;
+                        }
+
+                        return preserveWhitespace(value, translated);
+                    }
+
+                    function translateHtml(node) {
+                        if (!htmlSafeTags.has(node.tagName) || node.querySelector('input, select, textarea, button, table, form')) {
+                            return false;
+                        }
+
+                        const normalized = normalizeWhitespace(node.innerHTML || '');
+                        if (!normalized || !Object.prototype.hasOwnProperty.call(htmlTranslations, normalized)) {
+                            return false;
+                        }
+
+                        node.innerHTML = htmlTranslations[normalized];
+                        return true;
+                    }
+
+                    function translateAttributes(node) {
+                        ['title', 'placeholder', 'aria-label', 'alt'].forEach(function (attribute) {
+                            if (!node.hasAttribute(attribute)) {
+                                return;
+                            }
+
+                            const current = node.getAttribute(attribute);
+                            const next = translateText(current);
+                            if (current !== next) {
+                                node.setAttribute(attribute, next);
+                            }
+                        });
+
+                        if (node.tagName === 'INPUT') {
+                            const type = (node.getAttribute('type') || '').toLowerCase();
+                            if (['button', 'submit', 'reset'].includes(type) && node.hasAttribute('value')) {
+                                const current = node.getAttribute('value');
+                                const next = translateText(current);
+                                if (current !== next) {
+                                    node.setAttribute('value', next);
+                                }
+                            }
+                        }
+
+                        if (node.tagName === 'BUTTON' && node.hasAttribute('value')) {
+                            const current = node.getAttribute('value');
+                            const next = translateText(current);
+                            if (current !== next) {
+                                node.setAttribute('value', next);
+                            }
+                        }
+                    }
+
+                    function translateNode(node) {
+                        if (!node) {
+                            return;
+                        }
+
+                        if (node.nodeType === Node.TEXT_NODE) {
+                            const parentTag = node.parentElement ? node.parentElement.tagName : '';
+                            if (skippedTags.has(parentTag)) {
+                                return;
+                            }
+
+                            const next = translateText(node.nodeValue);
+                            if (node.nodeValue !== next) {
+                                node.nodeValue = next;
+                            }
+
+                            return;
+                        }
+
+                        if (node.nodeType !== Node.ELEMENT_NODE || skippedTags.has(node.tagName)) {
+                            return;
+                        }
+
+                        translateAttributes(node);
+                        if (translateHtml(node)) {
+                            return;
+                        }
+                        Array.from(node.childNodes).forEach(translateNode);
+                    }
+
+                    document.addEventListener('DOMContentLoaded', function () {
+                        translateNode(document.body);
+                        document.title = translateText(document.title);
+
+                        const observer = new MutationObserver(function (mutations) {
+                            mutations.forEach(function (mutation) {
+                                mutation.addedNodes.forEach(translateNode);
+                            });
+                        });
+
+                        observer.observe(document.body, {
+                            childList: true,
+                            subtree: true,
+                        });
+                    });
+
+                    return {
+                        translate: translateText,
+                        translateNode: translateNode,
+                    };
+                })();
+            </script>
         @show
     </body>
 </html>

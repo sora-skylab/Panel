@@ -3,6 +3,11 @@ This file is a running track of new features and fixes to each version of the pa
 
 This project follows [Semantic Versioning](http://semver.org) guidelines.
 
+## v1.0.3
+### Fixed
+* Added a locale-aware admin UI translation layer so hardcoded Blade text, admin modals, and dynamically inserted admin UI strings now follow the selected Japanese locale across the management area.
+* Expanded Japanese admin translations to cover the broader administration surface, including node/server management, mounts, nests, API keys, database hosts, users, and settings screens.
+
 ## v1.0.2
 ### Fixed
 * Changing the panel default language now also updates users who were still using the previous default locale, so the language change is applied immediately for existing accounts.
