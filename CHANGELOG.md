@@ -3,6 +3,13 @@ This file is a running track of new features and fixes to each version of the pa
 
 This project follows [Semantic Versioning](http://semver.org) guidelines.
 
+## v1.0.16
+### Fixed
+* Changed Cloudflare Turnstile on authentication forms from a hidden execute-only flow to a visible widget so the verification box actually appears on login and password reset screens.
+
+### Changed
+* Tightened the login page spacing between the password reset link and the language selector after the previous adjustment left too much vertical space.
+
 ## v1.0.15
 ### Changed
 * Increased the login page spacing between the password reset link and the language selector using an explicit wrapper block so the controls no longer visually touch.

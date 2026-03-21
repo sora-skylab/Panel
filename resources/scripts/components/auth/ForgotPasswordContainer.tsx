@@ -39,17 +39,20 @@ export default () => {
         // If there is no token in the state yet, request the token and then abort this submit request
         // since it will be re-submitted when the captcha data is returned by the component.
         if (captchaEnabled && !token) {
-            try {
-                if (captchaProvider === 'turnstile') {
-                    turnstileRef.current!.execute();
-                } else {
-                    recaptchaRef.current!.execute().catch((error) => {
-                        console.error(error);
+            if (captchaProvider === 'turnstile') {
+                setSubmitting(false);
+                addFlash({ type: 'error', title: t('ui.common.error'), message: t('strings.captcha_invalid', { ns: 'strings' }) });
 
-                        setSubmitting(false);
-                        addFlash({ type: 'error', title: t('ui.common.error'), message: httpErrorToHuman(error) });
-                    });
-                }
+                return;
+            }
+
+            try {
+                recaptchaRef.current!.execute().catch((error) => {
+                    console.error(error);
+
+                    setSubmitting(false);
+                    addFlash({ type: 'error', title: t('ui.common.error'), message: httpErrorToHuman(error) });
+                });
             } catch (error) {
                 console.error(error);
 
@@ -130,7 +133,6 @@ export default () => {
                             siteKey={siteKey || '_invalid_key'}
                             onVerify={(response) => {
                                 setToken(response);
-                                submitForm();
                             }}
                             onExpire={() => {
                                 setSubmitting(false);
@@ -141,6 +143,7 @@ export default () => {
                                 setSubmitting(false);
                                 addFlash({ type: 'error', title: t('ui.common.error'), message: httpErrorToHuman(error) });
                             }}
+                            css={tw`mt-6`}
                         />
                     )}
                     <div css={tw`mt-6 text-center`}>

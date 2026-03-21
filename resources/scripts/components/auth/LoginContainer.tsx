@@ -24,7 +24,7 @@ const LoginContainer = ({ history }: RouteComponentProps) => {
     const turnstileRef = useRef<TurnstileHandle>(null);
     const [token, setToken] = useState('');
 
-    const { clearFlashes, clearAndAddHttpError } = useFlash();
+    const { addFlash, clearFlashes, clearAndAddHttpError } = useFlash();
     const { enabled: captchaEnabled, provider: captchaProvider, siteKey } = useStoreState(
         (state) => state.settings.data!.recaptcha
     );
@@ -39,17 +39,20 @@ const LoginContainer = ({ history }: RouteComponentProps) => {
         // If there is no token in the state yet, request the token and then abort this submit request
         // since it will be re-submitted when the captcha data is returned by the component.
         if (captchaEnabled && !token) {
-            try {
-                if (captchaProvider === 'turnstile') {
-                    turnstileRef.current!.execute();
-                } else {
-                    recaptchaRef.current!.execute().catch((error) => {
-                        console.error(error);
+            if (captchaProvider === 'turnstile') {
+                setSubmitting(false);
+                addFlash({ type: 'error', title: t('ui.common.error'), message: t('strings.captcha_invalid', { ns: 'strings' }) });
 
-                        setSubmitting(false);
-                        clearAndAddHttpError({ error });
-                    });
-                }
+                return;
+            }
+
+            try {
+                recaptchaRef.current!.execute().catch((error) => {
+                    console.error(error);
+
+                    setSubmitting(false);
+                    clearAndAddHttpError({ error });
+                });
             } catch (error) {
                 console.error(error);
 
@@ -138,7 +141,6 @@ const LoginContainer = ({ history }: RouteComponentProps) => {
                             siteKey={siteKey || '_invalid_key'}
                             onVerify={(response) => {
                                 setToken(response);
-                                submitForm();
                             }}
                             onExpire={() => {
                                 setSubmitting(false);
@@ -149,6 +151,7 @@ const LoginContainer = ({ history }: RouteComponentProps) => {
                                 setSubmitting(false);
                                 clearAndAddHttpError({ error });
                             }}
+                            css={tw`mt-6`}
                         />
                     )}
                     <div css={tw`mt-6 text-center`}>
@@ -159,7 +162,7 @@ const LoginContainer = ({ history }: RouteComponentProps) => {
                             {t('ui.auth.forgot_password')}
                         </Link>
                     </div>
-                    <div css={tw`mt-10 pt-2`}>
+                    <div css={tw`mt-8 pt-1`}>
                         <LocaleSwitcher />
                     </div>
                 </LoginFormContainer>
