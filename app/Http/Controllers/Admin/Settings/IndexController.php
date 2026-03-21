@@ -7,6 +7,7 @@ use Illuminate\Http\RedirectResponse;
 use Prologue\Alerts\AlertsMessageBag;
 use Illuminate\Contracts\Console\Kernel;
 use Pterodactyl\Http\Controllers\Controller;
+use Pterodactyl\Models\User;
 use Pterodactyl\Traits\Helpers\AvailableLanguages;
 use Pterodactyl\Services\Helpers\SoftwareVersionService;
 use Pterodactyl\Contracts\Repository\SettingsRepositoryInterface;
@@ -46,12 +47,20 @@ class IndexController extends Controller
      */
     public function update(BaseSettingsFormRequest $request): RedirectResponse
     {
+        $previousLocale = config('app.panel_locale', config('app.locale', 'en'));
+        $newLocale = $request->input('app:locale');
+
         foreach ($request->normalize() as $key => $value) {
             $this->settings->set('settings::' . $key, $value);
         }
 
+        if ($previousLocale !== $newLocale) {
+            // Keep users that were following the previous default locale in sync with the new default.
+            User::query()->where('language', $previousLocale)->update(['language' => $newLocale]);
+        }
+
         $this->kernel->call('queue:restart');
-        $this->alert->success('Panel settings have been updated successfully and the queue worker was restarted to apply these changes.')->flash();
+        $this->alert->success(trans('admin/settings.notices.settings_updated'))->flash();
 
         return redirect()->route('admin.settings');
     }

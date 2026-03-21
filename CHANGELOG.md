@@ -3,6 +3,11 @@ This file is a running track of new features and fixes to each version of the pa
 
 This project follows [Semantic Versioning](http://semver.org) guidelines.
 
+## v1.0.2
+### Fixed
+* Changing the panel default language now also updates users who were still using the previous default locale, so the language change is applied immediately for existing accounts.
+* The admin settings page now renders key labels through translation files so locale changes are visible after saving.
+
 ## v1.0.1
 ### Fixed
 * Fixed frontend translation keys rendering as raw `ui.*` strings by preloading frontend namespaces and resolving namespace-prefixed keys correctly.

@@ -6,9 +6,9 @@
         <div class="col-xs-12">
             <div class="nav-tabs-custom nav-tabs-floating">
                 <ul class="nav nav-tabs">
-                    <li @if($activeTab === 'basic')class="active"@endif><a href="{{ route('admin.settings') }}">General</a></li>
-                    <li @if($activeTab === 'mail')class="active"@endif><a href="{{ route('admin.settings.mail') }}">Mail</a></li>
-                    <li @if($activeTab === 'advanced')class="active"@endif><a href="{{ route('admin.settings.advanced') }}">Advanced</a></li>
+                    <li @if($activeTab === 'basic')class="active"@endif><a href="{{ route('admin.settings') }}">@lang('admin/settings.tabs.general')</a></li>
+                    <li @if($activeTab === 'mail')class="active"@endif><a href="{{ route('admin.settings.mail') }}">@lang('admin/settings.tabs.mail')</a></li>
+                    <li @if($activeTab === 'advanced')class="active"@endif><a href="{{ route('admin.settings.advanced') }}">@lang('admin/settings.tabs.advanced')</a></li>
                 </ul>
             </div>
         </div>
