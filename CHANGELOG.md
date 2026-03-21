@@ -3,6 +3,10 @@ This file is a running track of new features and fixes to each version of the pa
 
 This project follows [Semantic Versioning](http://semver.org) guidelines.
 
+## v1.0.21
+### Fixed
+* Preloaded the Turnstile script on auth pages and changed the widget loader to wait on an existing in-flight script instead of discarding it, fixing the case where the login page widget only appeared after navigating away and back.
+
 ## v1.0.20
 ### Fixed
 * Increased the Turnstile readiness wait on initial auth page loads and now render directly into the mounted container element to avoid the login page widget missing until after navigating away and back.

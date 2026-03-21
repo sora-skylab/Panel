@@ -35,6 +35,19 @@
                     window.PterodactylLocaleData = {!! json_encode($localeData, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) !!};
                 </script>
             @endif
+            @if(!empty($siteConfiguration) && (($siteConfiguration['recaptcha']['provider'] ?? 'none') === 'turnstile'))
+                <link rel="preconnect" href="https://challenges.cloudflare.com" crossorigin>
+                <link rel="dns-prefetch" href="https://challenges.cloudflare.com">
+                <script
+                    src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit"
+                    async
+                    defer
+                    data-turnstile-loader="true"
+                    data-turnstile-status="loading"
+                    onload="this.dataset.turnstileStatus='loaded'"
+                    onerror="this.dataset.turnstileStatus='failed'"
+                ></script>
+            @endif
         @show
 
         @yield('assets')

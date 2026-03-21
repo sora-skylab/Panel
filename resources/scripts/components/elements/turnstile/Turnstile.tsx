@@ -41,10 +41,28 @@ type Props = {
 
 const SCRIPT_SOURCE = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
 const SCRIPT_SELECTOR = 'script[data-turnstile-loader="true"]';
-const LOAD_TIMEOUT = 10000;
-const READY_TIMEOUT = 10000;
+const READY_TIMEOUT = 60000;
 const READY_RETRY_DELAY = 100;
 let scriptLoader: Promise<TurnstileApi> | null = null;
+
+const getOrCreateScript = (): HTMLScriptElement => {
+    const existing = document.querySelector<HTMLScriptElement>(SCRIPT_SELECTOR);
+    if (existing && existing.dataset.turnstileStatus !== 'failed') {
+        return existing;
+    }
+
+    existing?.remove();
+
+    const script = document.createElement('script');
+    script.src = SCRIPT_SOURCE;
+    script.async = true;
+    script.defer = true;
+    script.dataset.turnstileLoader = 'true';
+    script.dataset.turnstileStatus = 'loading';
+    document.head.appendChild(script);
+
+    return script;
+};
 
 const loadTurnstile = (): Promise<TurnstileApi> => {
     if (typeof window === 'undefined') {
@@ -58,7 +76,8 @@ const loadTurnstile = (): Promise<TurnstileApi> => {
     if (!scriptLoader) {
         scriptLoader = new Promise<TurnstileApi>((resolve, reject) => {
             let settled = false;
-            let timeoutId = 0;
+            const deadline = Date.now() + READY_TIMEOUT;
+            const script = getOrCreateScript();
 
             const finish = (callback: () => void) => {
                 if (settled) {
@@ -66,60 +85,48 @@ const loadTurnstile = (): Promise<TurnstileApi> => {
                 }
 
                 settled = true;
-                window.clearTimeout(timeoutId);
+                script.removeEventListener('load', handleLoad);
+                script.removeEventListener('error', handleError);
                 callback();
             };
 
             const fail = (message: string) => {
-                if (script.isConnected && !window.turnstile) {
-                    script.remove();
-                }
-
                 finish(() => reject(new Error(message)));
             };
 
             const resolveWhenReady = (deadline = Date.now() + READY_TIMEOUT) => {
                 if (window.turnstile) {
+                    script.dataset.turnstileStatus = 'loaded';
                     window.turnstile.ready(() => finish(() => resolve(window.turnstile!)));
                     return;
                 }
 
+                if (script.dataset.turnstileStatus === 'failed') {
+                    fail('Failed to load the Cloudflare Turnstile script.');
+                    return;
+                }
+
                 if (Date.now() >= deadline) {
-                    fail('Cloudflare Turnstile failed to initialize.');
+                    fail('Cloudflare Turnstile did not finish loading.');
                     return;
                 }
 
                 window.setTimeout(() => resolveWhenReady(deadline), READY_RETRY_DELAY);
             };
 
-            const existing = document.querySelector<HTMLScriptElement>(SCRIPT_SELECTOR);
-            if (existing && !window.turnstile) {
-                existing.remove();
+            function handleLoad() {
+                script.dataset.turnstileStatus = 'loaded';
+                resolveWhenReady(deadline);
             }
 
-            const script =
-                document.querySelector<HTMLScriptElement>(SCRIPT_SELECTOR) ?? document.createElement('script');
-
-            const handleLoad = () => resolveWhenReady();
-            const handleError = () => fail('Failed to load the Cloudflare Turnstile script.');
-
-            timeoutId = window.setTimeout(() => fail('Cloudflare Turnstile did not finish loading.'), LOAD_TIMEOUT);
-
-            if (window.turnstile) {
-                resolveWhenReady();
-                return;
+            function handleError() {
+                script.dataset.turnstileStatus = 'failed';
+                fail('Failed to load the Cloudflare Turnstile script.');
             }
 
-            script.addEventListener('load', handleLoad, { once: true });
-            script.addEventListener('error', handleError, { once: true });
-
-            if (!script.isConnected) {
-                script.src = SCRIPT_SOURCE;
-                script.async = true;
-                script.defer = true;
-                script.dataset.turnstileLoader = 'true';
-                document.head.appendChild(script);
-            }
+            script.addEventListener('load', handleLoad);
+            script.addEventListener('error', handleError);
+            resolveWhenReady(deadline);
         }).catch((error) => {
             scriptLoader = null;
             throw error;
