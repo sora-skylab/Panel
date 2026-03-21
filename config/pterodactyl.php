@@ -106,6 +106,12 @@ return [
         ],
     ],
 
+    'panel_updater' => [
+        'state_file' => env('PTERODACTYL_PANEL_UPDATER_STATE_FILE', storage_path('app/panel-updater/status.json')),
+        'log_file' => env('PTERODACTYL_PANEL_UPDATER_LOG_FILE', storage_path('logs/panel-updater.log')),
+        'start_timeout' => env('PTERODACTYL_PANEL_UPDATER_START_TIMEOUT', 2),
+    ],
+
     /*
     |--------------------------------------------------------------------------
     | Client Features

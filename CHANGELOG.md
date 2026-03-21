@@ -3,6 +3,13 @@ This file is a running track of new features and fixes to each version of the pa
 
 This project follows [Semantic Versioning](http://semver.org) guidelines.
 
+## v1.0.22
+### Added
+* Added a background Panel self-updater in the admin system information area so administrators can start a release upgrade from the web UI without opening a console.
+
+### Changed
+* Hardened the `p:upgrade` command so download, composer, chmod, chown, and artisan steps now fail loudly and the Panel is brought back out of maintenance mode when possible after an error.
+
 ## v1.0.21
 ### Fixed
 * Preloaded the Turnstile script on auth pages and changed the widget loader to wait on an existing in-flight script instead of discarding it, fixing the case where the login page widget only appeared after navigating away and back.

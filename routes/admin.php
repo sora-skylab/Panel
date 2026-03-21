@@ -5,6 +5,8 @@ use Pterodactyl\Http\Controllers\Admin;
 use Pterodactyl\Http\Middleware\Admin\Servers\ServerInstalled;
 
 Route::get('/', [Admin\BaseController::class, 'index'])->name('admin.index');
+Route::get('/panel-updates/status', [Admin\PanelUpdateController::class, 'status'])->name('admin.panel-updates.status');
+Route::post('/panel-updates', [Admin\PanelUpdateController::class, 'store'])->name('admin.panel-updates.store');
 
 /*
 |--------------------------------------------------------------------------
