@@ -3,6 +3,10 @@ This file is a running track of new features and fixes to each version of the pa
 
 This project follows [Semantic Versioning](http://semver.org) guidelines.
 
+## v1.0.23
+### Fixed
+* Prevented the admin overview from crashing with a 500 error if the automatic updater status fails to load, and replaced the updater button's Blade-only disabled helper with a more conservative markup fallback.
+
 ## v1.0.22
 ### Added
 * Added a background Panel self-updater in the admin system information area so administrators can start a release upgrade from the web UI without opening a console.

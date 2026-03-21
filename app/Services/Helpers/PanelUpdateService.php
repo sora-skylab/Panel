@@ -24,34 +24,40 @@ class PanelUpdateService
 
     public function getOverview(): array
     {
-        $state = $this->normalizeState($this->readState());
-        $latestVersion = $this->versionService->getPanel();
-        $ownership = $this->detectOwnership();
-        $canRepairOwnership = $this->canRepairOwnership();
-        $updateAvailable = $this->hasUpdateAvailable($latestVersion);
+        try {
+            $state = $this->normalizeState($this->readState());
+            $latestVersion = $this->versionService->getPanel();
+            $ownership = $this->detectOwnership();
+            $canRepairOwnership = $this->canRepairOwnership();
+            $updateAvailable = $this->hasUpdateAvailable($latestVersion);
 
-        return [
-            'status' => Arr::get($state, 'status', self::STATUS_IDLE),
-            'status_detail' => Arr::get($state, 'detail'),
-            'current_version' => config('app.version'),
-            'latest_version' => $latestVersion,
-            'target_version' => Arr::get($state, 'target_version', $latestVersion),
-            'release_url' => $this->versionService->getPanelReleaseUrl(),
-            'update_available' => $updateAvailable,
-            'is_running' => $this->isActiveStatus(Arr::get($state, 'status')),
-            'can_start' => $this->isSupportedPlatform() && $this->canLaunchUpdater() && $updateAvailable && !$this->isActiveStatus(Arr::get($state, 'status')),
-            'supported' => $this->isSupportedPlatform(),
-            'started_at' => Arr::get($state, 'started_at'),
-            'completed_at' => Arr::get($state, 'completed_at'),
-            'pid' => Arr::get($state, 'pid'),
-            'detected_user' => Arr::get($state, 'user') ?: $ownership['user'],
-            'detected_group' => Arr::get($state, 'group') ?: $ownership['group'],
-            'can_repair_ownership' => $canRepairOwnership,
-            'will_skip_chown' => Arr::has($state, 'skip_chown')
-                ? (bool) Arr::get($state, 'skip_chown')
-                : !$canRepairOwnership,
-            'log_excerpt' => $this->readLogExcerpt(),
-        ];
+            return [
+                'status' => Arr::get($state, 'status', self::STATUS_IDLE),
+                'status_detail' => Arr::get($state, 'detail'),
+                'current_version' => config('app.version'),
+                'latest_version' => $latestVersion,
+                'target_version' => Arr::get($state, 'target_version', $latestVersion),
+                'release_url' => $this->versionService->getPanelReleaseUrl(),
+                'update_available' => $updateAvailable,
+                'is_running' => $this->isActiveStatus(Arr::get($state, 'status')),
+                'can_start' => $this->isSupportedPlatform() && $this->canLaunchUpdater() && $updateAvailable && !$this->isActiveStatus(Arr::get($state, 'status')),
+                'supported' => $this->isSupportedPlatform(),
+                'started_at' => Arr::get($state, 'started_at'),
+                'completed_at' => Arr::get($state, 'completed_at'),
+                'pid' => Arr::get($state, 'pid'),
+                'detected_user' => Arr::get($state, 'user') ?: $ownership['user'],
+                'detected_group' => Arr::get($state, 'group') ?: $ownership['group'],
+                'can_repair_ownership' => $canRepairOwnership,
+                'will_skip_chown' => Arr::has($state, 'skip_chown')
+                    ? (bool) Arr::get($state, 'skip_chown')
+                    : !$canRepairOwnership,
+                'log_excerpt' => $this->readLogExcerpt(),
+            ];
+        } catch (\Throwable $exception) {
+            report($exception);
+
+            return $this->getFallbackOverview('The automatic updater status could not be loaded. Check storage logs and permissions before starting an update.');
+        }
     }
 
     /**
@@ -399,5 +405,37 @@ class PanelUpdateService
         }
 
         $this->files->makeDirectory($path, 0755, true);
+    }
+
+    protected function getFallbackOverview(?string $detail = null): array
+    {
+        $latestVersion = $this->versionService->getPanel();
+        $ownership = ['user' => null, 'group' => null];
+
+        try {
+            $ownership = $this->detectOwnership();
+        } catch (\Throwable) {
+        }
+
+        return [
+            'status' => self::STATUS_FAILED,
+            'status_detail' => $detail,
+            'current_version' => config('app.version'),
+            'latest_version' => $latestVersion,
+            'target_version' => $latestVersion,
+            'release_url' => $this->versionService->getPanelReleaseUrl(),
+            'update_available' => $this->hasUpdateAvailable($latestVersion),
+            'is_running' => false,
+            'can_start' => false,
+            'supported' => $this->isSupportedPlatform(),
+            'started_at' => null,
+            'completed_at' => null,
+            'pid' => null,
+            'detected_user' => $ownership['user'],
+            'detected_group' => $ownership['group'],
+            'can_repair_ownership' => $this->canRepairOwnership(),
+            'will_skip_chown' => !$this->canRepairOwnership(),
+            'log_excerpt' => null,
+        ];
     }
 }

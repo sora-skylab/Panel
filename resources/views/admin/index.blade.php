@@ -131,7 +131,7 @@
                         type="button"
                         class="btn btn-success"
                         id="start-panel-update"
-                        @disabled(!$updater['can_start'])
+                        @if(!$updater['can_start']) disabled="disabled" @endif
                     >
                         @lang('admin/update.automatic.start_button')
                     </button>
