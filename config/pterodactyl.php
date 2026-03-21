@@ -83,16 +83,27 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | CDN
+    | Version Information
     |--------------------------------------------------------------------------
     |
-    | Information for the panel to use when contacting the CDN to confirm
-    | if panel is up to date.
+    | Configure the release endpoints used to determine the latest available
+    | Panel and Wings versions for this fork.
     */
 
-    'cdn' => [
+    'versioning' => [
         'cache_time' => 60,
-        'url' => 'https://cdn.pterodactyl.io/releases/latest.json',
+        'panel' => [
+            'latest_url' => env('PTERODACTYL_PANEL_VERSION_URL', 'https://api.github.com/repos/sora-skylab/Panel/releases/latest'),
+            'releases_url' => env('PTERODACTYL_PANEL_RELEASES_URL', 'https://github.com/sora-skylab/Panel/releases'),
+            'repository_url' => env('PTERODACTYL_PANEL_REPOSITORY_URL', 'https://github.com/sora-skylab/Panel'),
+        ],
+        'wings' => [
+            'latest_url' => env('PTERODACTYL_WINGS_VERSION_URL', 'https://api.github.com/repos/sora-skylab/Wings/releases/latest'),
+        ],
+        'support' => [
+            'discord_url' => env('PTERODACTYL_DISCORD_URL', 'https://pterodactyl.io/discord'),
+            'donations_url' => env('PTERODACTYL_DONATIONS_URL', 'https://github.com/sponsors/matthewpi'),
+        ],
     ],
 
     /*

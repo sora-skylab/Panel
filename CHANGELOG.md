@@ -3,6 +3,11 @@ This file is a running track of new features and fixes to each version of the pa
 
 This project follows [Semantic Versioning](http://semver.org) guidelines.
 
+## v1.0.4
+### Fixed
+* The admin dashboard version widget now compares against this fork's GitHub releases instead of upstream Pterodactyl releases.
+* Admin dashboard GitHub and upgrade URLs now point to the fork release channel so update guidance stays consistent with custom releases.
+
 ## v1.0.3
 ### Fixed
 * Added a locale-aware admin UI translation layer so hardcoded Blade text, admin modals, and dynamically inserted admin UI strings now follow the selected Japanese locale across the management area.

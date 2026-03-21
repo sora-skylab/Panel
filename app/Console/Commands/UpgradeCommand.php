@@ -9,8 +9,6 @@ use Symfony\Component\Console\Helper\ProgressBar;
 
 class UpgradeCommand extends Command
 {
-    protected const DEFAULT_URL = 'https://github.com/pterodactyl/panel/releases/%s/panel.tar.gz';
-
     protected $signature = 'p:upgrade
         {--user= : The user that PHP runs under. All files will be owned by this user.}
         {--group= : The group that PHP runs under. All files will be owned by this group.}
@@ -190,6 +188,9 @@ class UpgradeCommand extends Command
             return $this->option('url');
         }
 
-        return sprintf(self::DEFAULT_URL, $this->option('release') ? 'download/v' . $this->option('release') : 'latest/download');
+        $releasesUrl = rtrim(config('pterodactyl.versioning.panel.releases_url'), '/');
+        $downloadPath = $this->option('release') ? 'download/v' . $this->option('release') : 'latest/download';
+
+        return sprintf('%s/%s/panel.tar.gz', $releasesUrl, $downloadPath);
     }
 }
