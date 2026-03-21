@@ -3,6 +3,14 @@ This file is a running track of new features and fixes to each version of the pa
 
 This project follows [Semantic Versioning](http://semver.org) guidelines.
 
+## v1.0.7
+### Fixed
+* Removed the locale switchers' dependency on newly added POST and client API routes so language changes now work on installations that have not rebuilt their route cache.
+* Moved the login-page language selector below the "Forgot password?" link as requested.
+
+### Changed
+* Locale changes on the login and account pages now use the existing `GET /auth/...` and `GET /account` routes with a locale query parameter, while the middleware persists the selected language to the browser cookie and authenticated user profile.
+
 ## v1.0.6
 ### Added
 * Added a guest locale preference switcher on the authentication screens so the login, password reset, and checkpoint pages can be switched without administrator access.

@@ -7,11 +7,9 @@ use Illuminate\Http\Response;
 use Illuminate\Auth\AuthManager;
 use Illuminate\Http\JsonResponse;
 use Pterodactyl\Facades\Activity;
-use Pterodactyl\Http\Middleware\LanguageMiddleware;
 use Pterodactyl\Services\Users\UserUpdateService;
 use Pterodactyl\Transformers\Api\Client\AccountTransformer;
 use Pterodactyl\Http\Requests\Api\Client\Account\UpdateEmailRequest;
-use Pterodactyl\Http\Requests\Api\Client\Account\UpdateLanguageRequest;
 use Pterodactyl\Http\Requests\Api\Client\Account\UpdatePasswordRequest;
 
 class AccountController extends ClientApiController
@@ -73,16 +71,5 @@ class AccountController extends ClientApiController
         }
 
         return new JsonResponse([], Response::HTTP_NO_CONTENT);
-    }
-
-    /**
-     * Update the authenticated user's language preference.
-     */
-    public function updateLanguage(UpdateLanguageRequest $request): JsonResponse
-    {
-        $user = $this->updateService->handle($request->user(), $request->validated());
-
-        return (new JsonResponse([], Response::HTTP_NO_CONTENT))
-            ->withCookie(cookie()->forever(LanguageMiddleware::COOKIE_NAME, $user->language));
     }
 }

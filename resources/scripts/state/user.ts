@@ -1,6 +1,5 @@
 import { Action, action, Thunk, thunk } from 'easy-peasy';
 import updateAccountEmail from '@/api/account/updateAccountEmail';
-import updateAccountLanguage from '@/api/account/updateAccountLanguage';
 
 export interface UserData {
     uuid: string;
@@ -18,7 +17,6 @@ export interface UserStore {
     setUserData: Action<UserStore, UserData>;
     updateUserData: Action<UserStore, Partial<UserData>>;
     updateUserEmail: Thunk<UserStore, { email: string; password: string }, any, UserStore, Promise<void>>;
-    updateUserLanguage: Thunk<UserStore, string, any, UserStore, Promise<void>>;
 }
 
 const user: UserStore = {
@@ -36,12 +34,6 @@ const user: UserStore = {
         await updateAccountEmail(payload.email, payload.password);
 
         actions.updateUserData({ email: payload.email });
-    }),
-
-    updateUserLanguage: thunk(async (actions, payload) => {
-        await updateAccountLanguage(payload);
-
-        actions.updateUserData({ language: payload });
     }),
 };
 

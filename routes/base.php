@@ -12,9 +12,6 @@ Route::get('/account', [Base\IndexController::class, 'index'])
 Route::get('/locales/locale.json', Base\LocaleController::class)
     ->withoutMiddleware(['auth', RequireTwoFactorAuthentication::class])
     ->where('namespace', '.*');
-Route::post('/locales/locale', Base\LocalePreferenceController::class)
-    ->withoutMiddleware(['auth', RequireTwoFactorAuthentication::class])
-    ->name('locale.preference');
 
 Route::get('/{react}', [Base\IndexController::class, 'index'])
     ->where('react', '^(?!(\/)?(api|auth|admin|daemon)).+');

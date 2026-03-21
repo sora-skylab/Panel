@@ -6,6 +6,7 @@ import { useStoreState } from 'easy-peasy';
 import { Formik, FormikHelpers } from 'formik';
 import { object, string } from 'yup';
 import Field from '@/components/elements/Field';
+import LocaleSwitcher from '@/components/auth/LocaleSwitcher';
 import tw from 'twin.macro';
 import Button from '@/components/elements/Button';
 import Reaptcha from 'reaptcha';
@@ -120,6 +121,7 @@ const LoginContainer = ({ history }: RouteComponentProps) => {
                             {t('ui.auth.forgot_password')}
                         </Link>
                     </div>
+                    <LocaleSwitcher css={tw`mt-4`} />
                 </LoginFormContainer>
             )}
         </Formik>
