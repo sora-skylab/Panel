@@ -27,7 +27,7 @@ return [
         'default_language' => 'Default Language',
         'default_language_description' => 'The default language to use when rendering UI components.',
         'footer_custom_text' => 'Footer Custom Text',
-        'footer_custom_text_description' => 'Displayed below the default Pterodactyl copyright on the login page and client dashboard. Plain text only; line breaks are preserved.',
+        'footer_custom_text_description' => 'Displayed below the default Pterodactyl copyright on the login page and client dashboard. Supports safe inline HTML (a, br, strong, em, b, i, u, small, span, code) and the {{current_year}} or {{year}} placeholders.',
     ],
     'advanced_settings' => [
         'page_title' => 'Advanced Settings',

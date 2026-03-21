@@ -5,6 +5,7 @@ namespace Pterodactyl\Http\ViewComposers;
 use Illuminate\View\View;
 use Pterodactyl\Traits\Helpers\AvailableLanguages;
 use Pterodactyl\Services\Helpers\AssetHashService;
+use Pterodactyl\Services\Helpers\FooterContentService;
 use Pterodactyl\Services\Translation\FrontendTranslationService;
 
 class AssetComposer
@@ -16,6 +17,7 @@ class AssetComposer
      */
     public function __construct(
         private AssetHashService $assetHashService,
+        private FooterContentService $footerContentService,
         private FrontendTranslationService $translations,
     ) {
     }
@@ -33,7 +35,7 @@ class AssetComposer
         $view->with('localeData', $this->translations->loadLocales([$currentLocale, $fallbackLocale]));
         $view->with('siteConfiguration', [
             'name' => config('app.name') ?? 'Pterodactyl',
-            'footerCustomText' => config('app.footer_custom_text') ?? '',
+            'footerCustomHtml' => $this->footerContentService->render(config('app.footer_custom_text') ?? ''),
             'locale' => $currentLocale,
             'availableLanguages' => $this->getAvailableLanguages(true),
             'recaptcha' => [

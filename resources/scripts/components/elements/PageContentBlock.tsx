@@ -13,8 +13,8 @@ export interface PageContentBlockProps {
 }
 
 const PageContentBlock: React.FC<PageContentBlockProps> = ({ title, showFlashKey, className, children }) => {
-    const footerCustomText = useStoreState(
-        (state: ApplicationStore) => state.settings.data?.footerCustomText?.trim() ?? ''
+    const footerCustomHtml = useStoreState(
+        (state: ApplicationStore) => state.settings.data?.footerCustomHtml?.trim() ?? ''
     );
 
     useEffect(() => {
@@ -42,10 +42,11 @@ const PageContentBlock: React.FC<PageContentBlockProps> = ({ title, showFlashKey
                         </a>
                         &nbsp;&copy; 2015 - {new Date().getFullYear()}
                     </p>
-                    {footerCustomText && (
-                        <p css={tw`text-center text-neutral-500 text-xs mt-2 whitespace-pre-line max-w-3xl mx-auto px-4`}>
-                            {footerCustomText}
-                        </p>
+                    {footerCustomHtml && (
+                        <p
+                            css={tw`text-center text-neutral-500 text-xs mt-2 whitespace-pre-line max-w-3xl mx-auto px-4`}
+                            dangerouslySetInnerHTML={{ __html: footerCustomHtml }}
+                        />
                     )}
                 </ContentContainer>
             </>

@@ -3,6 +3,11 @@ This file is a running track of new features and fixes to each version of the pa
 
 This project follows [Semantic Versioning](http://semver.org) guidelines.
 
+## v1.0.29
+### Added
+* Added safe inline HTML support for the configurable footer text on the login page and client dashboard.
+* Added `{{current_year}}` and `{{year}}` placeholders for footer text so date ranges such as `2022-{{current_year}}` update automatically each year.
+
 ## v1.0.28
 ### Changed
 * Changed the admin overview page to refresh the latest release information from GitHub on every full page load, so a manual reload immediately reflects newly published Panel releases.

@@ -31,8 +31,8 @@ const Container = styled.div`
 `;
 
 export default forwardRef<HTMLFormElement, Props>(({ title, ...props }, ref) => {
-    const footerCustomText = useStoreState(
-        (state: ApplicationStore) => state.settings.data?.footerCustomText?.trim() ?? ''
+    const footerCustomHtml = useStoreState(
+        (state: ApplicationStore) => state.settings.data?.footerCustomHtml?.trim() ?? ''
     );
 
     return (
@@ -58,10 +58,11 @@ export default forwardRef<HTMLFormElement, Props>(({ title, ...props }, ref) => 
                     Pterodactyl Software
                 </a>
             </p>
-            {footerCustomText && (
-                <p css={tw`text-center text-neutral-500 text-xs mt-2 whitespace-pre-line max-w-2xl mx-auto px-4`}>
-                    {footerCustomText}
-                </p>
+            {footerCustomHtml && (
+                <p
+                    css={tw`text-center text-neutral-500 text-xs mt-2 whitespace-pre-line max-w-2xl mx-auto px-4`}
+                    dangerouslySetInnerHTML={{ __html: footerCustomHtml }}
+                />
             )}
         </Container>
     );

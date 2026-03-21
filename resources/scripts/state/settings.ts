@@ -3,7 +3,7 @@ import { CaptchaProvider } from '@/types/captcha';
 
 export interface SiteSettings {
     name: string;
-    footerCustomText: string;
+    footerCustomHtml: string;
     locale: string;
     availableLanguages: Record<string, string>;
     recaptcha: {
