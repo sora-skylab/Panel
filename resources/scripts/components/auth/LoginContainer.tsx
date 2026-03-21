@@ -11,6 +11,7 @@ import Button from '@/components/elements/Button';
 import Reaptcha from 'reaptcha';
 import useFlash from '@/plugins/useFlash';
 import { t } from '@/lib/locale';
+import LocaleSwitcher from '@/components/auth/LocaleSwitcher';
 
 interface Values {
     username: string;
@@ -119,6 +120,7 @@ const LoginContainer = ({ history }: RouteComponentProps) => {
                         >
                             {t('ui.auth.forgot_password')}
                         </Link>
+                        <LocaleSwitcher css={tw`mt-4`} />
                     </div>
                 </LoginFormContainer>
             )}
