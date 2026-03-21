@@ -104,6 +104,10 @@ class SettingsServiceProvider extends ServiceProvider
 
             $config->set(str_replace(':', '.', $key), $value);
         }
+
+        // Preserve the configured panel default locale so request-specific locale changes
+        // do not overwrite the persisted setting value used by the admin UI and frontend bootstrapping.
+        $config->set('app.panel_locale', $config->get('app.locale', 'en'));
     }
 
     public static function getEncryptedKeys(): array

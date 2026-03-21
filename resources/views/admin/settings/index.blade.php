@@ -56,7 +56,7 @@
                                 <div>
                                     <select name="app:locale" class="form-control">
                                         @foreach($languages as $key => $value)
-                                            <option value="{{ $key }}" @if(config('app.locale') === $key) selected @endif>{{ $value }}</option>
+                                            <option value="{{ $key }}" @if(old('app:locale', config('app.panel_locale', config('app.locale'))) === $key) selected @endif>{{ $value }}</option>
                                         @endforeach
                                     </select>
                                     <p class="text-muted"><small>The default language to use when rendering UI components.</small></p>

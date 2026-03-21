@@ -2,6 +2,7 @@ import i18n from '@/i18n';
 import { format, formatDistanceToNow, formatDistanceToNowStrict } from 'date-fns';
 import { enUS, ja } from 'date-fns/locale';
 
+const frontendNamespaces = new Set(['activity', 'auth', 'strings', 'ui']);
 const getDateLocale = () => (i18n.language.startsWith('ja') ? ja : enUS);
 const useJapanesePatterns = () => i18n.language.startsWith('ja');
 const statusKeyMap: Record<string, string> = {
@@ -20,7 +21,46 @@ const statusKeyMap: Record<string, string> = {
     unavailable: 'ui.server.statuses.unavailable',
 };
 
-export const t = (key: string, options?: Record<string, unknown>) => i18n.t(key, options) as string;
+type TranslationOptions = Record<string, unknown> & {
+    ns?: string;
+};
+
+const resolveTranslation = (key: string, options?: TranslationOptions) => {
+    const separator = key.indexOf('.');
+
+    if (separator === -1) {
+        return { key, options };
+    }
+
+    const namespace = key.slice(0, separator);
+    const resolvedKey = key.slice(separator + 1);
+
+    if (!resolvedKey) {
+        return { key, options };
+    }
+
+    if (typeof options?.ns === 'string' && options.ns === namespace) {
+        return {
+            key: resolvedKey,
+            options,
+        };
+    }
+
+    if (!options?.ns && frontendNamespaces.has(namespace)) {
+        return {
+            key: resolvedKey,
+            options: { ...options, ns: namespace },
+        };
+    }
+
+    return { key, options };
+};
+
+export const t = (key: string, options?: TranslationOptions) => {
+    const resolved = resolveTranslation(key, options);
+
+    return i18n.t(resolved.key, resolved.options) as string;
+};
 
 export const formatDateTime = (date: Date | number, englishPattern: string, japanesePattern?: string) =>
     format(date, useJapanesePatterns() ? japanesePattern || 'yyyy/MM/dd HH:mm' : englishPattern, {

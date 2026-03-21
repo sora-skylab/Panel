@@ -30,6 +30,11 @@
                     window.SiteConfiguration = {!! json_encode($siteConfiguration) !!};
                 </script>
             @endif
+            @if(!empty($localeData))
+                <script>
+                    window.PterodactylLocaleData = {!! json_encode($localeData, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) !!};
+                </script>
+            @endif
         @show
 
         @yield('assets')

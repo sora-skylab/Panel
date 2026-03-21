@@ -3,6 +3,12 @@ This file is a running track of new features and fixes to each version of the pa
 
 This project follows [Semantic Versioning](http://semver.org) guidelines.
 
+## v1.0.1
+### Fixed
+* Fixed frontend translation keys rendering as raw `ui.*` strings by preloading frontend namespaces and resolving namespace-prefixed keys correctly.
+* Fixed the admin default language screen showing the current request language instead of the saved panel default locale.
+* Fixed the panel bootstrap locale payload so the saved default locale is no longer overwritten by per-user request locale changes.
+
 ## v1.0.0
 ### Added
 * Initial public release for the `sora-skylab/Panel` fork based on upstream `v1.12.1`.
