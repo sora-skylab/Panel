@@ -18,6 +18,10 @@ return [
         'update_available' => 'Update available',
         'status_text_latest' => 'This Panel release matches the latest published release for your fork.',
         'status_text_update' => 'A newer release is available for your fork. You can start the upgrade below.',
+        'check_button' => 'Check Latest Release',
+        'check_result_update' => 'A newer Panel release is available: :version.',
+        'check_result_none' => 'No newer Panel release was found. Current latest release: :version.',
+        'check_result_error' => 'The latest Panel release could not be checked right now.',
     ],
     'automatic' => [
         'title' => 'Automatic Panel Updates',

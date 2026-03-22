@@ -43,6 +43,9 @@
         'system_update_available' => trans('admin/update.system.update_available'),
         'system_status_text_latest' => trans('admin/update.system.status_text_latest'),
         'system_status_text_update' => trans('admin/update.system.status_text_update'),
+        'system_check_result_update' => trans('admin/update.system.check_result_update', ['version' => ':version']),
+        'system_check_result_none' => trans('admin/update.system.check_result_none', ['version' => ':version']),
+        'system_check_result_error' => trans('admin/update.system.check_result_error'),
         'start_confirm_title' => trans('admin/update.automatic.start_confirm_title'),
         'start_confirm_text' => trans('admin/update.automatic.start_confirm_text'),
         'start_confirm_button' => trans('admin/update.automatic.start_confirm_button'),
@@ -112,6 +115,17 @@
                         @lang('admin/update.system.status_text_update')
                     @endif
                 </p>
+                <div class="btn-group" role="group" aria-label="Panel version actions">
+                    <button
+                        type="button"
+                        class="btn btn-default btn-sm"
+                        id="check-panel-version"
+                        @if(!$updaterRoutesAvailable) disabled="disabled" @endif
+                    >
+                        @lang('admin/update.system.check_button')
+                    </button>
+                </div>
+                <div class="alert alert-info" id="panel-version-check-feedback" style="display: none; margin-top: 12px; margin-bottom: 0;"></div>
             </div>
         </div>
     </div>
@@ -323,9 +337,18 @@
                 $('#panel-version-status-text').text(upToDate ? translations.system_status_text_latest : translations.system_status_text_update);
             }
 
+            function setVersionCheckFeedback(message, level) {
+                $('#panel-version-check-feedback')
+                    .removeClass('alert-info alert-success alert-warning alert-danger')
+                    .addClass(level === 'danger' ? 'alert-danger' : (level === 'warning' ? 'alert-warning' : 'alert-success'))
+                    .text(message)
+                    .show();
+            }
+
             function updateActions(data) {
                 $('#start-panel-update').prop('disabled', !updaterRoutesAvailable || !data.can_start);
                 $('#refresh-panel-update').prop('disabled', !updaterRoutesAvailable);
+                $('#check-panel-version').prop('disabled', !updaterRoutesAvailable || data.is_running);
                 $('#panel-updater-action-note').text(getActionNote(data));
             }
 
@@ -362,17 +385,32 @@
                 return translations.generic_error;
             }
 
-            function refreshStatus(showError) {
+            function refreshStatus(showError, options) {
+                options = options || {};
+
                 $.ajax({
                     type: 'GET',
                     url: statusRoute,
                     dataType: 'json',
                     data: {
-                        refresh_version: showError ? 1 : 0,
+                        refresh_version: options.forceVersionCheck ? 1 : (showError ? 1 : 0),
                     },
                 }).done(function (response) {
                     render(response.data);
+
+                    if (options.reportVersionCheck) {
+                        setVersionCheckFeedback(
+                            response.data.update_available
+                                ? format(translations.system_check_result_update, { version: response.data.latest_version || response.data.target_version || '' })
+                                : format(translations.system_check_result_none, { version: response.data.latest_version || response.data.current_version || '' }),
+                            response.data.update_available ? 'warning' : 'success'
+                        );
+                    }
                 }).fail(function () {
+                    if (options.reportVersionCheck) {
+                        setVersionCheckFeedback(translations.system_check_result_error, 'danger');
+                    }
+
                     if (!state.is_running) {
                         if (showError) {
                             swal(translations.refresh_error_title, translations.refresh_error_text, 'error');
@@ -403,6 +441,17 @@
 
             $('#refresh-panel-update').on('click', function () {
                 refreshStatus(true);
+            });
+
+            $('#check-panel-version').on('click', function () {
+                if ($(this).prop('disabled')) {
+                    return;
+                }
+
+                refreshStatus(false, {
+                    forceVersionCheck: true,
+                    reportVersionCheck: true,
+                });
             });
 
             $('#start-panel-update').on('click', function () {

@@ -3,6 +3,10 @@ This file is a running track of new features and fixes to each version of the pa
 
 This project follows [Semantic Versioning](http://semver.org) guidelines.
 
+## v1.0.31
+### Added
+* Added a dedicated latest-release check button on the admin overview page that explicitly rechecks the newest Panel release and displays whether an update was found or the installation is already current.
+
 ## v1.0.30
 ### Fixed
 * Added a GitHub web-release fallback for Panel version checks and preserved the last known successful release data when the GitHub API is temporarily rate-limited, so the admin updater no longer loses the latest release information.
