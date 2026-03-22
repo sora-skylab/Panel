@@ -3,6 +3,7 @@
 namespace Pterodactyl\Http\Controllers\Admin;
 
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Pterodactyl\Http\Controllers\Controller;
 use Pterodactyl\Services\Helpers\PanelUpdateService;
 
@@ -24,10 +25,10 @@ class PanelUpdateController extends Controller
         ]);
     }
 
-    public function status(): JsonResponse
+    public function status(Request $request): JsonResponse
     {
         return response()->json([
-            'data' => $this->panelUpdateService->getOverview(),
+            'data' => $this->panelUpdateService->getOverview($request->boolean('refresh_version')),
         ]);
     }
 }

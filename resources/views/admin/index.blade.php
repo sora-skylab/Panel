@@ -367,6 +367,9 @@
                     type: 'GET',
                     url: statusRoute,
                     dataType: 'json',
+                    data: {
+                        refresh_version: showError ? 1 : 0,
+                    },
                 }).done(function (response) {
                     render(response.data);
                 }).fail(function () {

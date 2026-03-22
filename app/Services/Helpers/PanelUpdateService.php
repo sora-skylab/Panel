@@ -22,9 +22,10 @@ class PanelUpdateService
     ) {
     }
 
-    public function getOverview(): array
+    public function getOverview(bool $refreshVersion = false): array
     {
         try {
+            $this->versionService->refresh($refreshVersion);
             $state = $this->normalizeState($this->readState());
             $latestVersion = $this->versionService->getPanel();
             $ownership = $this->detectOwnership();
@@ -73,7 +74,7 @@ class PanelUpdateService
             throw new DisplayException('Unable to launch the automatic updater process from this Panel installation.');
         }
 
-        $overview = $this->getOverview();
+        $overview = $this->getOverview(true);
         if ($overview['is_running']) {
             throw new DisplayException('An automatic update is already running.');
         }

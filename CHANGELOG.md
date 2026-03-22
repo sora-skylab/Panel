@@ -3,6 +3,11 @@ This file is a running track of new features and fixes to each version of the pa
 
 This project follows [Semantic Versioning](http://semver.org) guidelines.
 
+## v1.0.30
+### Fixed
+* Added a GitHub web-release fallback for Panel version checks and preserved the last known successful release data when the GitHub API is temporarily rate-limited, so the admin updater no longer loses the latest release information.
+* Changed the admin updater's manual status refresh and update start flow to force a fresh Panel release check without making the background status polling hit GitHub on every interval.
+
 ## v1.0.29
 ### Added
 * Added safe inline HTML support for the configurable footer text on the login page and client dashboard.
