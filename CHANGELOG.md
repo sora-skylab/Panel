@@ -3,6 +3,11 @@ This file is a running track of new features and fixes to each version of the pa
 
 This project follows [Semantic Versioning](http://semver.org) guidelines.
 
+## v1.0.32
+### Fixed
+* Changed the automatic updater to resolve and launch a CLI PHP binary instead of reusing the web runtime binary, fixing installations where `PHP_BINARY` points to `php-fpm` and the updater immediately exits with the FPM usage screen.
+* Added an explicit updater warning when no CLI PHP binary can be detected, plus an environment override via `PTERODACTYL_PANEL_UPDATER_PHP_BINARY` for non-standard PHP CLI paths.
+
 ## v1.0.31
 ### Added
 * Added a dedicated latest-release check button on the admin overview page that explicitly rechecks the newest Panel release and displays whether an update was found or the installation is already current.

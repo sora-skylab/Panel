@@ -59,6 +59,7 @@
         'log_empty' => trans('admin/update.automatic.log_empty'),
         'unsupported_platform' => trans('admin/update.automatic.unsupported_platform'),
         'no_update_available' => trans('admin/update.automatic.no_update_available'),
+        'launcher_unavailable' => trans('admin/update.automatic.launcher_unavailable'),
         'skip_chown_note' => trans('admin/update.automatic.skip_chown_note'),
         'ready_note' => trans('admin/update.automatic.ready_note'),
         'route_cache_note' => trans('admin/update.automatic.route_cache_note'),
@@ -303,6 +304,10 @@
 
                 if (!data.supported) {
                     return translations.unsupported_platform;
+                }
+
+                if (!data.can_start && data.launch_error) {
+                    return data.launch_error || translations.launcher_unavailable;
                 }
 
                 if (!data.update_available) {

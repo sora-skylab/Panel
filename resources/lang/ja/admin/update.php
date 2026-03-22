@@ -39,6 +39,7 @@ return [
         'unsupported_platform' => '自動更新は Linux などの Unix 系ホストでのみ利用できます。',
         'route_cache_note' => '自動更新ルートが現在のルートキャッシュにまだ含まれていません。ルートキャッシュをクリアするか、最新のアップグレード手順を一度実行すると updater を利用できます。',
         'no_update_available' => 'この Panel はすでに最新リリースです。',
+        'launcher_unavailable' => '自動更新に必要な CLI 版 PHP 実行ファイルを検出できませんでした。CLI 版 PHP が標準パスにない場合は PTERODACTYL_PANEL_UPDATER_PHP_BINARY を設定してください。',
         'skip_chown_note' => 'ファイル所有者の修復は自動でスキップされます。Panel のファイルを Web ユーザーが書き込めない場合、更新が失敗する可能性があります。',
         'ready_note' => 'updater は利用可能です。この fork の最新リリースを取得し、その後通常の Panel 更新手順を実行します。',
         'log_title' => '最近の updater ログ',

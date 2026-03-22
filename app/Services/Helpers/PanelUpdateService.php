@@ -6,6 +6,7 @@ use Carbon\CarbonImmutable;
 use Illuminate\Support\Arr;
 use Illuminate\Filesystem\Filesystem;
 use Pterodactyl\Exceptions\DisplayException;
+use Symfony\Component\Process\ExecutableFinder;
 use Symfony\Component\Process\Process;
 
 class PanelUpdateService
@@ -15,6 +16,8 @@ class PanelUpdateService
     public const STATUS_RUNNING = 'running';
     public const STATUS_COMPLETED = 'completed';
     public const STATUS_FAILED = 'failed';
+    private ?string $resolvedPhpBinary = null;
+    private bool $resolvedPhpBinaryLoaded = false;
 
     public function __construct(
         private Filesystem $files,
@@ -30,6 +33,7 @@ class PanelUpdateService
             $latestVersion = $this->versionService->getPanel();
             $ownership = $this->detectOwnership();
             $canRepairOwnership = $this->canRepairOwnership();
+            $phpBinary = $this->resolvePhpBinary();
             $updateAvailable = $this->hasUpdateAvailable($latestVersion);
 
             return [
@@ -41,8 +45,10 @@ class PanelUpdateService
                 'release_url' => $this->versionService->getPanelReleaseUrl(),
                 'update_available' => $updateAvailable,
                 'is_running' => $this->isActiveStatus(Arr::get($state, 'status')),
-                'can_start' => $this->isSupportedPlatform() && $this->canLaunchUpdater() && $updateAvailable && !$this->isActiveStatus(Arr::get($state, 'status')),
+                'can_start' => $this->isSupportedPlatform() && $phpBinary !== null && $updateAvailable && !$this->isActiveStatus(Arr::get($state, 'status')),
                 'supported' => $this->isSupportedPlatform(),
+                'php_binary' => $phpBinary,
+                'launch_error' => $this->getLaunchError($phpBinary),
                 'started_at' => Arr::get($state, 'started_at'),
                 'completed_at' => Arr::get($state, 'completed_at'),
                 'pid' => Arr::get($state, 'pid'),
@@ -70,8 +76,9 @@ class PanelUpdateService
             throw new DisplayException('Automatic updates are only supported on Linux and other Unix-like hosts.');
         }
 
-        if (!$this->canLaunchUpdater()) {
-            throw new DisplayException('Unable to launch the automatic updater process from this Panel installation.');
+        $phpBinary = $this->resolvePhpBinary();
+        if ($phpBinary === null) {
+            throw new DisplayException($this->getLaunchError($phpBinary) ?? 'Unable to launch the automatic updater process from this Panel installation.');
         }
 
         $overview = $this->getOverview(true);
@@ -102,7 +109,7 @@ class PanelUpdateService
         $this->prepareLog($state);
 
         try {
-            $pid = $this->launchBackgroundUpdater($state);
+            $pid = $this->launchBackgroundUpdater($state, $phpBinary);
         } catch (\Throwable $exception) {
             $this->markFailed('Unable to start the background updater process: ' . $exception->getMessage());
 
@@ -165,7 +172,7 @@ class PanelUpdateService
         $this->appendLog(sprintf('[%s] Automatic update failed: %s', CarbonImmutable::now()->toDateTimeString(), $detail));
     }
 
-    protected function launchBackgroundUpdater(array $state): int
+    protected function launchBackgroundUpdater(array $state, string $phpBinary): int
     {
         $arguments = ['--no-interaction'];
         $targetVersion = Arr::get($state, 'target_version');
@@ -186,9 +193,12 @@ class PanelUpdateService
             }
         }
 
+        $this->appendLog(sprintf('[%s] Using CLI PHP binary: %s', CarbonImmutable::now()->toDateTimeString(), $phpBinary));
+
         $command = sprintf(
-            'nohup %s artisan p:update-panel %s >> %s 2>&1 < /dev/null & echo $!',
-            escapeshellarg(PHP_BINARY),
+            'nohup %s %s p:update-panel %s >> %s 2>&1 < /dev/null & echo $!',
+            escapeshellarg($phpBinary),
+            escapeshellarg(base_path('artisan')),
             implode(' ', $arguments),
             escapeshellarg($this->getLogFilePath()),
         );
@@ -314,9 +324,97 @@ class PanelUpdateService
 
     protected function canLaunchUpdater(): bool
     {
-        return filled(PHP_BINARY)
+        return $this->resolvePhpBinary() !== null
             && $this->files->exists(base_path('artisan'))
             && $this->isSupportedPlatform();
+    }
+
+    protected function resolvePhpBinary(): ?string
+    {
+        if ($this->resolvedPhpBinaryLoaded) {
+            return $this->resolvedPhpBinary;
+        }
+
+        $this->resolvedPhpBinaryLoaded = true;
+        $finder = new ExecutableFinder();
+        $candidates = array_values(array_unique(array_filter(array_merge(
+            [(string) config('pterodactyl.panel_updater.php_binary', '')],
+            $this->getPhpBinaryCandidates(),
+        ))));
+
+        foreach ($candidates as $candidate) {
+            $resolved = $this->resolvePhpBinaryCandidate($finder, $candidate);
+            if ($resolved !== null && $this->isCliPhpBinary($resolved)) {
+                return $this->resolvedPhpBinary = $resolved;
+            }
+        }
+
+        return $this->resolvedPhpBinary = null;
+    }
+
+    protected function getPhpBinaryCandidates(): array
+    {
+        $binary = (string) PHP_BINARY;
+        $candidates = [];
+        $basename = strtolower(basename($binary));
+
+        if ($this->isCliPhpBinary($binary)) {
+            $candidates[] = $binary;
+        }
+
+        if (preg_match('/^php-fpm(?<suffix>\d+(?:\.\d+)?)?$/', $basename, $matches) === 1) {
+            $suffix = $matches['suffix'] ?? '';
+            if ($suffix !== '') {
+                $candidates[] = 'php' . $suffix;
+                $candidates[] = '/usr/bin/php' . $suffix;
+                $candidates[] = dirname($binary) . DIRECTORY_SEPARATOR . 'php' . $suffix;
+            }
+        }
+
+        $candidates[] = PHP_BINDIR . DIRECTORY_SEPARATOR . 'php';
+        $candidates[] = 'php' . PHP_MAJOR_VERSION . '.' . PHP_MINOR_VERSION;
+        $candidates[] = 'php' . PHP_MAJOR_VERSION;
+        $candidates[] = 'php';
+
+        return $candidates;
+    }
+
+    protected function resolvePhpBinaryCandidate(ExecutableFinder $finder, string $candidate): ?string
+    {
+        if ($candidate === '') {
+            return null;
+        }
+
+        if (str_starts_with($candidate, '/')) {
+            return $this->files->exists($candidate) ? $candidate : null;
+        }
+
+        return $finder->find($candidate);
+    }
+
+    protected function isCliPhpBinary(string $binary): bool
+    {
+        if ($binary === '') {
+            return false;
+        }
+
+        $name = strtolower(basename($binary));
+
+        return str_starts_with($name, 'php')
+            && !str_contains($name, 'fpm')
+            && !str_contains($name, 'cgi');
+    }
+
+    protected function getLaunchError(?string $phpBinary): ?string
+    {
+        if ($phpBinary !== null) {
+            return null;
+        }
+
+        return sprintf(
+            'Unable to locate a CLI PHP binary for the automatic updater. Detected runtime binary: %s. Set PTERODACTYL_PANEL_UPDATER_PHP_BINARY if the CLI binary is installed in a non-standard path.',
+            PHP_BINARY
+        );
     }
 
     protected function isActiveStatus(?string $status): bool
